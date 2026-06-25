@@ -1,520 +1,1265 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Primary Meta Tags -->
-  <!-- TODO: Replace with your paper title and author names -->
-  <meta name="title" content="PAPER_TITLE - AUTHOR_NAMES">
-  <!-- TODO: Write a compelling 150-160 character description of your research -->
-  <meta name="description" content="BRIEF_DESCRIPTION_OF_YOUR_RESEARCH_CONTRIBUTION_AND_FINDINGS">
-  <!-- TODO: Add 5-10 relevant keywords for your research area -->
-  <meta name="keywords" content="KEYWORD1, KEYWORD2, KEYWORD3, machine learning, computer vision, AI">
-  <!-- TODO: List all authors -->
-  <meta name="author" content="FIRST_AUTHOR_NAME, SECOND_AUTHOR_NAME">
-  <meta name="robots" content="index, follow">
-  <meta name="language" content="English">
-  
-  <!-- Open Graph / Facebook -->
+  <title>Fast LeWorldModel | Action-Prefix Prediction for Fast Latent Planning</title>
+  <meta name="title" content="Fast LeWorldModel - Yuntian Gao, Xiangyu Xu">
+  <meta name="description" content="Fast-LeWM accelerates reconstruction-free visual world-model planning by replacing autoregressive latent rollout with parallel action-prefix prediction.">
+  <meta name="keywords" content="Fast LeWorldModel, LeWorldModel, JEPA, latent world model, visual planning, action-prefix prediction, CEM, robot learning">
+  <meta name="author" content="Yuntian Gao, Xiangyu Xu">
   <meta property="og:type" content="article">
-  <!-- TODO: Replace with your institution or lab name -->
-  <meta property="og:site_name" content="INSTITUTION_OR_LAB_NAME">
-  <!-- TODO: Same as paper title above -->
-  <meta property="og:title" content="PAPER_TITLE">
-  <!-- TODO: Same as description above -->
-  <meta property="og:description" content="BRIEF_DESCRIPTION_OF_YOUR_RESEARCH_CONTRIBUTION_AND_FINDINGS">
-  <!-- TODO: Replace with your actual website URL -->
-  <meta property="og:url" content="https://YOUR_DOMAIN.com/YOUR_PROJECT_PAGE">
-  <!-- TODO: Create a 1200x630px preview image and update path -->
-  <meta property="og:image" content="https://YOUR_DOMAIN.com/static/images/social_preview.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="PAPER_TITLE - Research Preview">
-  <meta property="article:published_time" content="2024-01-01T00:00:00.000Z">
-  <meta property="article:author" content="FIRST_AUTHOR_NAME">
-  <meta property="article:section" content="Research">
-  <meta property="article:tag" content="KEYWORD1">
-  <meta property="article:tag" content="KEYWORD2">
-
-  <!-- Twitter -->
+  <meta property="og:title" content="Fast LeWorldModel">
+  <meta property="og:description" content="A fast latent world model that evaluates candidate action sequences with action-prefix prediction instead of autoregressive rollout.">
+  <meta property="og:image" content="static/images/figure1_efficiency.png">
   <meta name="twitter:card" content="summary_large_image">
-  <!-- TODO: Replace with your lab/institution Twitter handle -->
-  <meta name="twitter:site" content="@YOUR_TWITTER_HANDLE">
-  <!-- TODO: Replace with first author's Twitter handle -->
-  <meta name="twitter:creator" content="@AUTHOR_TWITTER_HANDLE">
-  <!-- TODO: Same as paper title above -->
-  <meta name="twitter:title" content="PAPER_TITLE">
-  <!-- TODO: Same as description above -->
-  <meta name="twitter:description" content="BRIEF_DESCRIPTION_OF_YOUR_RESEARCH_CONTRIBUTION_AND_FINDINGS">
-  <!-- TODO: Same as social preview image above -->
-  <meta name="twitter:image" content="https://YOUR_DOMAIN.com/static/images/social_preview.png">
-  <meta name="twitter:image:alt" content="PAPER_TITLE - Research Preview">
-
-  <!-- Academic/Research Specific -->
-  <meta name="citation_title" content="PAPER_TITLE">
-  <meta name="citation_author" content="FIRST_AUTHOR_LAST, FIRST_AUTHOR_FIRST">
-  <meta name="citation_author" content="SECOND_AUTHOR_LAST, SECOND_AUTHOR_FIRST">
-  <meta name="citation_publication_date" content="2024">
-  <meta name="citation_conference_title" content="CONFERENCE_NAME">
-  <meta name="citation_pdf_url" content="https://YOUR_DOMAIN.com/static/pdfs/paper.pdf">
-  
-  <!-- Additional SEO -->
-  <meta name="theme-color" content="#2563eb">
-  <meta name="msapplication-TileColor" content="#2563eb">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  
-  <!-- Preconnect for performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://ajax.googleapis.com">
-  <link rel="preconnect" href="https://documentcloud.adobe.com">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-
-
-  <!-- TODO: Replace with your paper title and authors -->
-  <title>PAPER_TITLE - AUTHOR_NAMES | Academic Research</title>
-  
-  <!-- Favicon and App Icons -->
-  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
-  <link rel="apple-touch-icon" href="static/images/favicon.ico">
-  
-  <!-- Critical CSS - Load synchronously -->
-  <link rel="stylesheet" href="static/css/bulma.min.css">
-  <link rel="stylesheet" href="static/css/index.css">
-  
-  <!-- Non-critical CSS - Load asynchronously -->
-  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  
-  <!-- Fallback for browsers that don't support preload -->
-  <noscript>
-    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
-    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
-    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  </noscript>
-  
-  <!-- Fonts - Optimized loading -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Defer non-critical JavaScript -->
-  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
-  <script defer src="static/js/fontawesome.all.min.js"></script>
-  <script defer src="static/js/bulma-carousel.min.js"></script>
-  <script defer src="static/js/bulma-slider.min.js"></script>
-  <script defer src="static/js/index.js"></script>
-  
-  <!-- Structured Data for Academic Papers -->
+  <meta name="twitter:title" content="Fast LeWorldModel">
+  <meta name="twitter:description" content="Parallel action-prefix prediction for efficient reconstruction-free visual planning.">
+  <meta name="citation_title" content="Fast LeWorldModel">
+  <meta name="citation_author" content="Gao, Yuntian">
+  <meta name="citation_author" content="Xu, Xiangyu">
+  <meta name="citation_pdf_url" content="static/pdfs/fast_leworldmodel.pdf">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
-    "headline": "PAPER_TITLE",
-    "description": "BRIEF_DESCRIPTION_OF_YOUR_RESEARCH_CONTRIBUTION_AND_FINDINGS",
+    "headline": "Fast LeWorldModel",
     "author": [
-      {
-        "@type": "Person",
-        "name": "FIRST_AUTHOR_NAME",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "INSTITUTION_NAME"
-        }
-      },
-      {
-        "@type": "Person",
-        "name": "SECOND_AUTHOR_NAME",
-        "affiliation": {
-          "@type": "Organization",
-          "name": "INSTITUTION_NAME"
-        }
-      }
+      {"@type": "Person", "name": "Yuntian Gao", "affiliation": {"@type": "Organization", "name": "Xi'an Jiaotong University"}},
+      {"@type": "Person", "name": "Xiangyu Xu", "affiliation": {"@type": "Organization", "name": "Xi'an Jiaotong University"}}
     ],
-    "datePublished": "2024-01-01",
-    "publisher": {
-      "@type": "Organization",
-      "name": "CONFERENCE_OR_JOURNAL_NAME"
-    },
-    "url": "https://YOUR_DOMAIN.com/YOUR_PROJECT_PAGE",
-    "image": "https://YOUR_DOMAIN.com/static/images/social_preview.png",
-    "keywords": ["KEYWORD1", "KEYWORD2", "KEYWORD3", "machine learning", "computer vision"],
-    "abstract": "FULL_ABSTRACT_TEXT_HERE",
-    "citation": "BIBTEX_CITATION_HERE",
+    "description": "Fast-LeWM replaces repeated local latent rollout with action-prefix prediction, enabling parallel multi-horizon latent prediction for reward-free visual planning.",
     "isAccessibleForFree": true,
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "mainEntity": {
-      "@type": "WebPage",
-      "@id": "https://YOUR_DOMAIN.com/YOUR_PROJECT_PAGE"
-    },
-    "about": [
-      {
-        "@type": "Thing",
-        "name": "RESEARCH_AREA_1"
-      },
-      {
-        "@type": "Thing", 
-        "name": "RESEARCH_AREA_2"
-      }
-    ]
+    "keywords": ["visual world models", "JEPA", "latent planning", "action-prefix prediction", "CEM"]
   }
   </script>
-  
-  <!-- Website/Organization Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "INSTITUTION_OR_LAB_NAME",
-    "url": "https://YOUR_INSTITUTION_WEBSITE.com",
-    "logo": "https://YOUR_DOMAIN.com/static/images/favicon.ico",
-    "sameAs": [
-      "https://twitter.com/YOUR_TWITTER_HANDLE",
-      "https://github.com/YOUR_GITHUB_USERNAME"
-    ]
-  }
-  </script>
+  <style>
+      
+      #abstract .section-lead {
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+#abstract .card p {
+  font-size: 1.35rem;
+  line-height: 1.8;
+}
+    :root {
+      --text: #172033;
+      --muted: #5e6b82;
+      --line: #e7edf5;
+      --bg: #f7faff;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-soft: #e8f0ff;
+      --accent: #10b981;
+      --accent-soft: #e8fff6;
+      --shadow: 0 18px 55px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: linear-gradient(180deg, #f7faff 0%, #ffffff 36%, #f8fbff 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(247, 250, 255, 0.86);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      font-size: 14px;
+    }
+    .brand { font-weight: 800; color: var(--text); }
+    .nav-links { display: flex; gap: 18px; flex-wrap: wrap; justify-content: flex-end; }
+    .hero { padding: 72px 0 32px; text-align: center; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: #1d4ed8;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: clamp(42px, 8vw, 76px);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      margin: 0 0 20px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: clamp(18px, 2.2vw, 23px);
+      max-width: 900px;
+      margin: 0 auto 26px;
+    }
+    .authors { font-size: 18px; margin: 8px 0 3px; }
+    .affiliation { color: var(--muted); margin: 0 0 24px; }
+    .buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 17px;
+      border-radius: 999px;
+      border: 1px solid #d8e1ee;
+      background: #fff;
+      color: var(--text);
+      font-weight: 750;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+    }
+    .button.primary { background: var(--text); color: #fff; border-color: var(--text); }
+    .teaser-card {
+      margin: 36px auto 8px;
+      padding: 16px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+    }
+    .teaser-card img, figure img { width: 100%; border-radius: 16px; display: block; }
+    section { padding: 58px 0; }
+    .section-title { font-size: clamp(30px, 4vw, 44px); line-height: 1.08; letter-spacing: -0.04em; margin: 0 0 18px; }
+    .section-lead { color: var(--muted); max-width: 850px; font-size: 18px; margin: 0 0 28px; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 35px rgba(15,23,42,0.055);
+    }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+    .span-12 { grid-column: span 12; }
+    .wide-figure {
+      grid-column: 1 / -1;
+      width: min(100%, 1080px);
+      margin: 0 auto;
+    }
+    .center-table-card {
+      grid-column: 1 / -1;
+      width: min(100%, 920px);
+      margin: 0 auto;
+    }
+    .open-loop-figure { width: min(100%, 1120px); }
+    .metric { font-size: 36px; line-height: 1; font-weight: 850; letter-spacing: -0.04em; margin: 0 0 8px; }
+    .metric-label { color: var(--muted); margin: 0; }
+    .pill {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #047857;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .pipeline-list { margin: 0; padding-left: 20px; }
+    .pipeline-list li { margin-bottom: 10px; }
+    .formula {
+      display: block;
+      margin: 16px 0 0;
+      padding: 15px 17px;
+      overflow-x: auto;
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    figure { margin: 0; }
+    figcaption { color: var(--muted); font-size: 14px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; overflow: hidden; border-radius: 14px; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { background: #f1f6ff; font-weight: 800; }
+    tr:last-child td { border-bottom: none; }
+    .highlight-row td { font-weight: 800; color: #0f766e; background: #f0fdfa; }
+    .bibtex {
+      white-space: pre-wrap;
+      overflow-x: auto;
+      margin: 0;
+      padding: 20px;
+      border-radius: 18px;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    footer { padding: 42px 0 60px; color: var(--muted); border-top: 1px solid var(--line); }
+    @media (max-width: 850px) {
+      .span-4, .span-5, .span-6, .span-7 { grid-column: span 12; }
+      .hero { padding-top: 50px; }
+      .nav-inner { align-items: flex-start; flex-direction: column; }
+      .nav-links { justify-content: flex-start; gap: 12px; }
+    }
+  </style>
 </head>
 <body>
-
-
-  <!-- Scroll to Top Button -->
-  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
-    <i class="fas fa-chevron-up"></i>
-  </button>
-
-  <!-- More Works Dropdown -->
-  <div class="more-works-container">
-    <button class="more-works-btn" onclick="toggleMoreWorks()" title="View More Works from Our Lab">
-      <i class="fas fa-flask"></i>
-      More Works
-      <i class="fas fa-chevron-down dropdown-arrow"></i>
-    </button>
-    <div class="more-works-dropdown" id="moreWorksDropdown">
-      <div class="dropdown-header">
-        <h4>More Works from Our Lab</h4>
-        <button class="close-btn" onclick="toggleMoreWorks()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="works-list">
-        <!-- TODO: Replace with your lab's related works -->
-        <a href="https://arxiv.org/abs/PAPER_ID_1" class="work-item" target="_blank">
-          <div class="work-info">
-            <!-- TODO: Replace with actual paper title -->
-            <h5>Paper Title 1</h5>
-            <!-- TODO: Replace with brief description -->
-            <p>Brief description of the work and its main contribution.</p>
-            <!-- TODO: Replace with venue and year -->
-            <span class="work-venue">Conference/Journal 2024</span>
-          </div>
-          <i class="fas fa-external-link-alt"></i>
-        </a>
-        <!-- TODO: Add more related works or remove extra items -->
-        <a href="https://arxiv.org/abs/PAPER_ID_2" class="work-item" target="_blank">
-          <div class="work-info">
-            <h5>Paper Title 2</h5>
-            <p>Brief description of the work and its main contribution.</p>
-            <span class="work-venue">Conference/Journal 2023</span>
-          </div>
-          <i class="fas fa-external-link-alt"></i>
-        </a>
-        <a href="https://arxiv.org/abs/PAPER_ID_3" class="work-item" target="_blank">
-          <div class="work-info">
-            <h5>Paper Title 3</h5>
-            <p>Brief description of the work and its main contribution.</p>
-            <span class="work-venue">Conference/Journal 2023</span>
-          </div>
-          <i class="fas fa-external-link-alt"></i>
-        </a>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top">Fast LeWorldModel</a>
+      <div class="nav-links">
+        <a href="#abstract">Abstract</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#bibtex">BibTeX</a>
       </div>
     </div>
-  </div>
+  </nav>
 
-  <main id="main-content">
-  <section class="hero">
-    <div class="hero-body">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <!-- TODO: Replace with your paper title -->
-            <h1 class="title is-1 publication-title">Academic Project Page</h1>
-            <div class="is-size-5 publication-authors">
-              <!-- TODO: Replace with your paper authors and their personal links -->
-              <span class="author-block">
-                <a href="FIRST AUTHOR PERSONAL LINK" target="_blank">First Author</a><sup>*</sup>,</span>
-                <span class="author-block">
-                  <a href="SECOND AUTHOR PERSONAL LINK" target="_blank">Second Author</a><sup>*</sup>,</span>
-                  <span class="author-block">
-                    <a href="THIRD AUTHOR PERSONAL LINK" target="_blank">Third Author</a>
-                  </span>
-                  </div>
+  <main id="top">
+    <header class="hero">
+      <div class="container">
 
-                  <div class="is-size-5 publication-authors">
-                    <!-- TODO: Replace with your institution and conference/journal info -->
-                    <span class="author-block">Institution Name<br>Conference name and year</span>
-                    <!-- TODO: Remove this line if no equal contribution -->
-                    <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
-                  </div>
+        <h1>Fast LeWorldModel</h1>
 
-                  <div class="column has-text-centered">
-                    <div class="publication-links">
-                         <!-- TODO: Update with your arXiv paper ID -->
-                      <span class="link-block">
-                        <a href="https://arxiv.org/pdf/<ARXIV PAPER ID>.pdf" target="_blank"
-                        class="external-link button is-normal is-rounded is-dark">
-                        <span class="icon">
-                          <i class="fas fa-file-pdf"></i>
-                        </span>
-                        <span>Paper</span>
-                      </a>
-                    </span>
+        <p class="authors">
+          <strong>Yuntian Gao</strong>,
+          <a href="https://xuxy09.github.io/" target="_blank" rel="noopener noreferrer">
+          <strong>Xiangyu Xu</strong><sup>&dagger;</sup>
+          </a>
+        </p>
+        <p class="affiliation">Xi'an Jiaotong University &nbsp;|&nbsp; <sup>&dagger;</sup>Corresponding author</p>
+        <div class="buttons">
+          <a class="button primary" href="static/pdfs/fast_leworldmodel.pdf" target="_blank">Paper PDF</a>
+          <a class="button" href="https://github.com/Yuntian-Gao/Fast-LeWorldModel" target="_blank">Code</a>
+        </div>
+<!--
+  Method comparison animation notes:
+  - Quick visual changes: edit the CSS variables under .method-compare below.
+  - Timing, labels, and gradient colors: edit methodCompareAnimationConfig after this block.
+  - SVG coordinates use a 360 x 72 viewBox; move x/y values if you want to reposition modules.
+-->
+<style>
+  .method-compare {
+    --compare-max-width: 1160px;
+    --compare-grid-gap: 18px 54px;
+    --compare-columns: 2;
+    --compare-card-radius: 14px;
+    --compare-viz-radius: 8px;
+    --compare-card-bg: rgba(255, 255, 255, 0.92);
+    --compare-card-shadow: 0 10px 22px rgba(15, 23, 42, 0.055);
+    --compare-base-arrow: #dfe7f2;
+    --compare-flow-blue: #8ccdf6;
+    --compare-muted-stroke: #94a3b8;
+    --compare-strong-stroke: #68acd8;
+    --compare-note-color: #64748b;
+    --compare-note-strong: #3478a6;
+    --compare-pulse-fill: rgba(140, 205, 246, 0.12);
+    --compare-pulse-stroke: #74b9e8;
+    --compare-done: #10b981;
+    --compare-cycle: 3.8s;
+    --compare-flow-shadow: drop-shadow(0 0 5px rgba(140, 205, 246, 0.18));
+    margin: 20px auto 8px;
+    width: min(100%, var(--compare-max-width));
+  }
 
-                    <!-- TODO: Add your supplementary material PDF or remove this section -->
-                    <span class="link-block">
-                      <a href="static/pdfs/supplementary_material.pdf" target="_blank"
-                      class="external-link button is-normal is-rounded is-dark">
-                      <span class="icon">
-                        <i class="fas fa-file-pdf"></i>
-                      </span>
-                      <span>Supplementary</span>
-                    </a>
-                  </span>
+  .planning-demo-title {
+    margin: 0 0 18px;
+    text-align: left;
+  }
 
-                  <!-- TODO: Replace with your GitHub repository URL -->
-                  <span class="link-block">
-                    <a href="https://github.com/YOUR REPO HERE" target="_blank"
-                    class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Code</span>
-                  </a>
-                </span>
+  .method-compare-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--compare-columns), minmax(0, 1fr));
+    gap: var(--compare-grid-gap);
+  }
 
-                <!-- TODO: Update with your arXiv paper ID -->
-                <span class="link-block">
-                  <a href="https://arxiv.org/abs/<ARXIV PAPER ID>" target="_blank"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-            </div>
+  .method-card:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .method-card:nth-child(3) { grid-column: 2; grid-row: 1; }
+  .method-card:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .method-card:nth-child(4) { grid-column: 2; grid-row: 2; }
+
+  .method-card {
+    background: var(--compare-card-bg);
+    border: 1px solid var(--line, #e7edf5);
+    border-radius: var(--compare-card-radius);
+    padding: 6px;
+    box-shadow: var(--compare-card-shadow);
+  }
+
+  .method-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 19px;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    margin-right: 6px;
+    margin-bottom: 0;
+    vertical-align: middle;
+  }
+
+  .method-card.baseline .method-badge {
+    background: #eef2f7;
+    color: #475569;
+  }
+
+  .method-card.ours .method-badge {
+    background: rgba(140, 205, 246, 0.18);
+    color: #2678aa;
+  }
+
+  .method-card h3 {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .method-card p {
+    display: none;
+  }
+
+  .viz-shell {
+    margin-top: 3px;
+    padding: 1px;
+    border-radius: var(--compare-viz-radius);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background:
+      radial-gradient(circle at 18% 12%, rgba(37, 99, 235, 0.08), transparent 28%),
+      linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  }
+
+  .viz-shell svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .viz-label {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--muted, #64748b);
+    text-align: center;
+    line-height: 1.35;
+  }
+
+  .viz-label:empty {
+    display: none;
+  }
+
+  .shape {
+    fill: rgba(255, 255, 255, 0.55);
+    stroke: var(--compare-muted-stroke);
+    stroke-width: 1.7;
+    stroke-linejoin: round;
+    transition: all 0.25s ease;
+  }
+
+  .shape-strong {
+    fill: rgba(255, 255, 255, 0.96);
+    stroke: var(--compare-strong-stroke);
+    stroke-width: 1.9;
+    stroke-linejoin: round;
+  }
+
+  .pred {
+    animation: predPulse var(--compare-cycle) infinite;
+    transform-origin: center;
+  }
+
+  .pred1 { animation-delay: 0.25s; }
+  .pred2 { animation-delay: 0.55s; }
+  .pred3 { animation-delay: 0.85s; }
+  .pred4 { animation-delay: 1.15s; }
+  .pred5 { animation-delay: 1.45s; }
+
+  .core {
+    animation: corePulse var(--compare-cycle) infinite;
+  }
+
+  .arrow-base {
+    fill: var(--compare-base-arrow);
+    opacity: 1;
+  }
+
+  .arrow-soft-blue {
+    fill: var(--compare-flow-blue);
+    opacity: 0.98;
+    filter: var(--compare-flow-shadow);
+  }
+
+  .svg-note {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    fill: var(--compare-note-color);
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  .svg-note-strong {
+    fill: var(--compare-note-strong);
+  }
+
+  .planning-label {
+    fill: var(--compare-note-color);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .done-check {
+    opacity: 0;
+  }
+
+  .done-check circle {
+    fill: rgba(16, 185, 129, 0.13);
+    stroke: var(--compare-done);
+    stroke-width: 1.6;
+  }
+
+  .done-check path {
+    fill: none;
+    stroke: var(--compare-done);
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .video-slot {
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .video-pane {
+    min-width: 0;
+  }
+
+  .video-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 18px;
+    margin-bottom: 4px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 850;
+    line-height: 1;
+  }
+
+  .video-frame {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.20);
+    border-radius: 10px;
+    background:
+      linear-gradient(135deg, rgba(148, 163, 184, 0.12) 0 25%, transparent 25% 50%, rgba(148, 163, 184, 0.12) 50% 75%, transparent 75% 100%),
+      #f8fbff;
+    background-size: 18px 18px;
+  }
+
+  .planning-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.72;
+    transition: opacity 0.25s ease;
+  }
+
+  .planning-video.is-playing {
+    opacity: 1;
+  }
+
+  .video-placeholder {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  @keyframes predPulse {
+    0%, 100% {
+      fill: rgba(255,255,255,0.78);
+      stroke: var(--compare-muted-stroke);
+      filter: none;
+    }
+    18%, 42% {
+      fill: var(--compare-pulse-fill);
+      stroke: var(--compare-pulse-stroke);
+      filter: drop-shadow(0 0 8px rgba(59,130,246,0.18));
+    }
+  }
+
+  @keyframes corePulse {
+    0%, 100% {
+      fill: rgba(255,255,255,0.96);
+      stroke: var(--compare-strong-stroke);
+      filter: none;
+    }
+    28%, 68% {
+      fill: rgba(140,205,246,0.11);
+      stroke: #68acd8;
+      filter: drop-shadow(0 0 8px rgba(104,172,216,0.14));
+    }
+  }
+
+  @media (max-width: 1050px) {
+    .method-compare {
+      --compare-columns: 2;
+      --compare-grid-gap: 16px 28px;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .method-compare {
+      --compare-columns: 1;
+    }
+
+    .method-card:nth-child(n) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+</style>
+
+<div class="method-compare" data-method-compare>
+  <h2 class="section-title planning-demo-title">Planning demo</h2>
+  <div class="method-compare-grid">
+
+    <!-- Group 1, baseline: compact planning-progress bar with five sequential predictors. -->
+    <div class="method-card baseline">
+      <span class="method-badge" data-label="baselineBadge">Baseline</span>
+      <h3 data-label="baselineTitle">Sequential rollout</h3>
+      <p data-label="baselineDescription"></p>
+
+      <div class="viz-shell">
+        <svg viewBox="0 0 360 72" role="img" aria-label="Baseline sequential rollout progress">
+          <defs>
+            <linearGradient id="baselineGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#7dd3fc" data-gradient-stop="baseline-0"/>
+              <stop offset="45%" stop-color="#60a5fa" data-gradient-stop="baseline-1"/>
+              <stop offset="75%" stop-color="#f9a8d4" data-gradient-stop="baseline-2"/>
+              <stop offset="100%" stop-color="#fca5a5" data-gradient-stop="baseline-3"/>
+            </linearGradient>
+
+            <clipPath id="leftFlowClip1">
+              <rect x="18" y="0" width="0" height="72">
+                <animate
+                  data-animate="baselineFlow"
+                  attributeName="width"
+                  dur="3.8s"
+                  repeatCount="1"
+                  fill="freeze"
+                  values="0;0;324;324"
+                  keyTimes="0;0.05;0.82;1" />
+              </rect>
+            </clipPath>
+          </defs>
+
+          <!-- 灰色底箭头 -->
+          <path class="arrow-base"
+            d="M18 36 H322 V31 L342 38 L322 45 V40 H18 Z" />
+
+          <!-- Predictor modules: edit these path d values to change module count, shape, or spacing. -->
+          <path class="shape pred pred1" d="M70 19 L94 28 L94 48 L70 57 Z"/>
+          <path class="shape pred pred2" d="M116 19 L140 28 L140 48 L116 57 Z"/>
+          <path class="shape pred pred3" d="M162 19 L186 28 L186 48 L162 57 Z"/>
+          <path class="shape pred pred4" d="M208 19 L232 28 L232 48 L208 57 Z"/>
+          <path class="shape pred pred5" d="M254 19 L278 28 L278 48 L254 57 Z"/>
+
+          <!-- 动态彩色箭头，放在模块之后，这样视觉上是“穿过模块” -->
+          <g clip-path="url(#leftFlowClip1)">
+            <path
+              d="M18 36 H322 V31 L342 38 L322 45 V40 H18 Z"
+              fill="url(#baselineGrad1)"
+              opacity="0.98"
+              filter="drop-shadow(0 0 6px rgba(96,165,250,0.20))"/>
+          </g>
+
+          <text x="18" y="12" class="planning-label">
+            Rollout in Planning...
+            <animate data-animate="baselinePlanning" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="1;1;0;0" keyTimes="0;0.78;0.82;1" />
+          </text>
+          <g class="done-check" transform="translate(344 9)">
+            <animate data-animate="baselineDone" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="0;0;1;1" keyTimes="0;0.78;0.82;1" />
+            <circle cx="0" cy="0" r="8"/>
+            <path d="M-4 -0.5 L-1 3 L5 -4"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="video-slot">
+        <div class="video-pane">
+          <div class="video-label">GT</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+              <source src="static/videos/gt.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="video-pane">
+          <div class="video-label">Baseline</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+              <source src="static/videos/baseline_cube.mp4" type="video/mp4">
+            </video>
           </div>
         </div>
       </div>
+
+      <div class="viz-label" data-label="baselineVizLabel"></div>
     </div>
-  </div>
-</section>
 
+    <!-- Group 1, ours: input progress reaches one predictor, then fans out as parallel progress bars. -->
+    <div class="method-card ours">
+      <span class="method-badge" data-label="oursBadge">Fast-LeWM</span>
+      <h3 data-label="oursTitle">Parallel prefix</h3>
+      <p data-label="oursDescription"></p>
 
-<!-- Teaser video-->
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <!-- TODO: Replace with your teaser video -->
-      <video poster="" id="tree" autoplay controls muted loop height="100%" preload="metadata">
-        <!-- TODO: Add your video file path here -->
-        <source src="static/videos/banner_video.mp4" type="video/mp4">
-      </video>
-      <!-- TODO: Replace with your video description -->
-      <h2 class="subtitle has-text-centered">
-        Aliquam vitae elit ullamcorper tellus egestas pellentesque. Ut lacus tellus, maximus vel lectus at, placerat pretium mi. Maecenas dignissim tincidunt vestibulum. Sed consequat hendrerit nisl ut maximus. 
-      </h2>
+      <div class="viz-shell">
+        <svg viewBox="0 0 360 72" role="img" aria-label="Fast LeWorldModel parallel prediction progress">
+          <defs>
+            <clipPath id="rightInputClip1">
+              <rect x="18" y="0" width="0" height="72">
+                <animate
+                  data-animate="oursInputFlow"
+                  attributeName="width"
+                  dur="3.8s"
+                  repeatCount="1"
+                  fill="freeze"
+                  values="0;0;122;122"
+                  keyTimes="0;0.02;0.12;1" />
+              </rect>
+            </clipPath>
+
+            <clipPath id="rightOutputClip1">
+              <rect x="204" y="0" width="0" height="72">
+                <animate
+                  data-animate="oursOutputFlow"
+                  attributeName="width"
+                  dur="3.8s"
+                  repeatCount="1"
+                  fill="freeze"
+                  values="0;0;138;138"
+                  keyTimes="0;0.07;0.21;1" />
+              </rect>
+            </clipPath>
+          </defs>
+
+          <!-- Base arrows stay visible underneath the animated clipped arrows. -->
+          <path class="arrow-base" d="M18 37 H124 V34 L140 39 L124 44 V41 H18 Z"/>
+          <path class="arrow-base" d="M204 22 H322 V19 L342 24 L322 29 V26 H204 Z"/>
+          <path class="arrow-base" d="M204 30 H322 V27 L342 32 L322 37 V34 H204 Z"/>
+          <path class="arrow-base" d="M204 38 H322 V35 L342 40 L322 45 V42 H204 Z"/>
+          <path class="arrow-base" d="M204 46 H322 V43 L342 48 L322 53 V50 H204 Z"/>
+          <path class="arrow-base" d="M204 54 H322 V51 L342 56 L322 61 V58 H204 Z"/>
+
+          <!-- predictor block -->
+          <rect class="shape-strong core" x="142" y="20" width="58" height="42" rx="9"/>
+          <text x="171" y="36" text-anchor="middle" class="svg-note svg-note-strong" data-label="coreLine1">prefix</text>
+          <text x="171" y="48" text-anchor="middle" class="svg-note svg-note-strong" data-label="coreLine2">pred</text>
+
+          <!-- input arrow -->
+          <g clip-path="url(#rightInputClip1)">
+            <path class="arrow-soft-blue" d="M18 37 H124 V34 L140 39 L124 44 V41 H18 Z"/>
+          </g>
+
+          <!-- parallel output arrows -->
+          <g clip-path="url(#rightOutputClip1)">
+            <path class="arrow-soft-blue" d="M204 22 H322 V19 L342 24 L322 29 V26 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 30 H322 V27 L342 32 L322 37 V34 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 38 H322 V35 L342 40 L322 45 V42 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 46 H322 V43 L342 48 L322 53 V50 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 54 H322 V51 L342 56 L322 61 V58 H204 Z"/>
+          </g>
+
+          <text x="18" y="12" class="planning-label">
+            Rollout in Planning...
+            <animate data-animate="oursPlanning" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="1;1;0;0" keyTimes="0;0.207;0.21;1" />
+          </text>
+          <g class="done-check" transform="translate(344 9)">
+            <animate data-animate="oursDone" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="0;0;1;1" keyTimes="0;0.207;0.21;1" />
+            <circle cx="0" cy="0" r="8"/>
+            <path d="M-4 -0.5 L-1 3 L5 -4"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="video-slot">
+        <div class="video-pane">
+          <div class="video-label">GT</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="ours" muted playsinline preload="auto">
+              <source src="static/videos/gt.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="video-pane">
+          <div class="video-label">Fast-LeWM</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="ours" muted playsinline preload="auto">
+              <source src="static/videos/ours_cube.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-label" data-label="oursVizLabel"></div>
     </div>
-  </div>
-</section>
-<!-- End teaser video -->
 
-<!-- Paper abstract -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <!-- TODO: Replace with your paper abstract -->
+    <!-- Group 2 placeholder pair: duplicate this pair's labels later if each video needs custom copy. -->
+    <div class="method-card baseline">
+      <span class="method-badge" data-label="baselineBadge">Baseline</span>
+      <h3 data-label="baselineTitle">Sequential rollout</h3>
+      <p data-label="baselineDescription"></p>
+
+      <div class="viz-shell">
+        <svg viewBox="0 0 360 72" role="img" aria-label="Baseline sequential rollout progress">
+          <defs>
+            <linearGradient id="baselineGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#7dd3fc" data-gradient-stop="baseline-0"/>
+              <stop offset="45%" stop-color="#60a5fa" data-gradient-stop="baseline-1"/>
+              <stop offset="75%" stop-color="#f9a8d4" data-gradient-stop="baseline-2"/>
+              <stop offset="100%" stop-color="#fca5a5" data-gradient-stop="baseline-3"/>
+            </linearGradient>
+
+            <clipPath id="leftFlowClip2">
+              <rect x="18" y="0" width="0" height="72">
+                <animate
+                  data-animate="baselineFlow"
+                  attributeName="width"
+                  dur="3.8s"
+                  repeatCount="1"
+                  fill="freeze"
+                  values="0;0;324;324"
+                  keyTimes="0;0.05;0.82;1" />
+              </rect>
+            </clipPath>
+          </defs>
+
+          <path class="arrow-base"
+            d="M18 36 H322 V31 L342 38 L322 45 V40 H18 Z" />
+
+          <path class="shape pred pred1" d="M70 19 L94 28 L94 48 L70 57 Z"/>
+          <path class="shape pred pred2" d="M116 19 L140 28 L140 48 L116 57 Z"/>
+          <path class="shape pred pred3" d="M162 19 L186 28 L186 48 L162 57 Z"/>
+          <path class="shape pred pred4" d="M208 19 L232 28 L232 48 L208 57 Z"/>
+          <path class="shape pred pred5" d="M254 19 L278 28 L278 48 L254 57 Z"/>
+
+          <g clip-path="url(#leftFlowClip2)">
+            <path
+              d="M18 36 H322 V31 L342 38 L322 45 V40 H18 Z"
+              fill="url(#baselineGrad2)"
+              opacity="0.98"
+              filter="drop-shadow(0 0 6px rgba(96,165,250,0.20))"/>
+          </g>
+
+          <text x="18" y="12" class="planning-label">
+            Rollout in Planning...
+            <animate data-animate="baselinePlanning" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="1;1;0;0" keyTimes="0;0.78;0.82;1" />
+          </text>
+          <g class="done-check" transform="translate(344 9)">
+            <animate data-animate="baselineDone" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="0;0;1;1" keyTimes="0;0.78;0.82;1" />
+            <circle cx="0" cy="0" r="8"/>
+            <path d="M-4 -0.5 L-1 3 L5 -4"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="video-slot" aria-label="Reserved video slot">
+        <div class="video-pane">
+          <div class="video-label">GT</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+              <source src="static/videos/gt_pusht.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="video-pane">
+          <div class="video-label">Baseline</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+              <source src="static/videos/baseline_pusht.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-label" data-label="baselineVizLabel"></div>
+    </div>
+
+    <div class="method-card ours">
+      <span class="method-badge" data-label="oursBadge">Fast-LeWM</span>
+      <h3 data-label="oursTitle">Parallel prefix</h3>
+      <p data-label="oursDescription"></p>
+
+      <div class="viz-shell">
+        <svg viewBox="0 0 360 72" role="img" aria-label="Fast LeWorldModel parallel prediction progress">
+          <defs>
+            <clipPath id="rightInputClip2">
+              <rect x="18" y="0" width="0" height="72">
+                <animate
+                  data-animate="oursInputFlow"
+                  attributeName="width"
+                  dur="3.8s"
+                  repeatCount="1"
+                  fill="freeze"
+                  values="0;0;122;122"
+                  keyTimes="0;0.02;0.12;1" />
+              </rect>
+            </clipPath>
+
+            <clipPath id="rightOutputClip2">
+              <rect x="204" y="0" width="0" height="72">
+                <animate
+                  data-animate="oursOutputFlow"
+                  attributeName="width"
+                  dur="3.8s"
+                  repeatCount="1"
+                  fill="freeze"
+                  values="0;0;138;138"
+                  keyTimes="0;0.07;0.21;1" />
+              </rect>
+            </clipPath>
+          </defs>
+
+          <path class="arrow-base" d="M18 37 H124 V34 L140 39 L124 44 V41 H18 Z"/>
+          <path class="arrow-base" d="M204 22 H322 V19 L342 24 L322 29 V26 H204 Z"/>
+          <path class="arrow-base" d="M204 30 H322 V27 L342 32 L322 37 V34 H204 Z"/>
+          <path class="arrow-base" d="M204 38 H322 V35 L342 40 L322 45 V42 H204 Z"/>
+          <path class="arrow-base" d="M204 46 H322 V43 L342 48 L322 53 V50 H204 Z"/>
+          <path class="arrow-base" d="M204 54 H322 V51 L342 56 L322 61 V58 H204 Z"/>
+
+          <rect class="shape-strong core" x="142" y="20" width="58" height="42" rx="9"/>
+          <text x="171" y="36" text-anchor="middle" class="svg-note svg-note-strong" data-label="coreLine1">prefix</text>
+          <text x="171" y="48" text-anchor="middle" class="svg-note svg-note-strong" data-label="coreLine2">pred</text>
+
+          <g clip-path="url(#rightInputClip2)">
+            <path class="arrow-soft-blue" d="M18 37 H124 V34 L140 39 L124 44 V41 H18 Z"/>
+          </g>
+
+          <g clip-path="url(#rightOutputClip2)">
+            <path class="arrow-soft-blue" d="M204 22 H322 V19 L342 24 L322 29 V26 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 30 H322 V27 L342 32 L322 37 V34 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 38 H322 V35 L342 40 L322 45 V42 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 46 H322 V43 L342 48 L322 53 V50 H204 Z"/>
+            <path class="arrow-soft-blue" d="M204 54 H322 V51 L342 56 L322 61 V58 H204 Z"/>
+          </g>
+
+          <text x="18" y="12" class="planning-label">
+            Rollout in Planning...
+            <animate data-animate="oursPlanning" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="1;1;0;0" keyTimes="0;0.207;0.21;1" />
+          </text>
+          <g class="done-check" transform="translate(344 9)">
+            <animate data-animate="oursDone" attributeName="opacity" dur="3.8s" repeatCount="1" fill="freeze" values="0;0;1;1" keyTimes="0;0.207;0.21;1" />
+            <circle cx="0" cy="0" r="8"/>
+            <path d="M-4 -0.5 L-1 3 L5 -4"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="video-slot" aria-label="Reserved video slot">
+        <div class="video-pane">
+          <div class="video-label">GT</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="ours" muted playsinline preload="auto">
+              <source src="static/videos/gt_pusht.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="video-pane">
+          <div class="video-label">Fast-LeWM</div>
+          <div class="video-frame">
+            <video class="planning-video" data-video-trigger="ours" muted playsinline preload="auto">
+              <source src="static/videos/our_pusht.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-label" data-label="oursVizLabel"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /*
+    Edit this object to tune the hero comparison animation.
+    After editing values, the helper below applies them to CSS variables,
+    SVG <animate> timing, gradient stops, delays, and visible labels.
+  */
+  const methodCompareAnimationConfig = {
+    duration: "3.8s", // Planning-animation duration; the next cycle waits for the baseline video to finish.
+
+    layout: {
+      maxWidth: "1160px",
+      gridGap: "18px 54px",
+      columns: "2",
+      cardRadius: "14px",
+      vizRadius: "8px"
+    },
+
+    colors: {
+      baseArrow: "#dfe7f2",
+      fastArrow: "#8ccdf6",
+      mutedStroke: "#94a3b8",
+      strongStroke: "#68acd8",
+      note: "#64748b",
+      noteStrong: "#3478a6",
+      pulseFill: "rgba(140, 205, 246, 0.12)",
+      pulseStroke: "#74b9e8",
+      done: "#10b981",
+      baselineGradient: [
+        { offset: "0%", color: "#7dd3fc" },
+        { offset: "45%", color: "#60a5fa" },
+        { offset: "75%", color: "#f9a8d4" },
+        { offset: "100%", color: "#fca5a5" }
+      ]
+    },
+
+    // Delay each module so highlights follow the arrow direction.
+    delays: {
+      predictors: ["0.25s", "0.55s", "0.85s", "1.15s", "1.45s"]
+    },
+
+    // values/keyTimes control clipped arrow progress and Planning/Done opacity over time.
+    flow: {
+      baselineFlow: { values: "0;0;324;324", keyTimes: "0;0.05;0.82;1" },
+      baselinePlanning: { values: "1;1;0;0", keyTimes: "0;0.78;0.82;1" },
+      baselineDone: { values: "0;0;1;1", keyTimes: "0;0.78;0.82;1" },
+      oursInputFlow: { values: "0;0;122;122", keyTimes: "0;0.02;0.12;1" },
+      oursOutputFlow: { values: "0;0;138;138", keyTimes: "0;0.07;0.21;1" },
+      oursPlanning: { values: "1;1;0;0", keyTimes: "0;0.207;0.21;1" },
+      oursDone: { values: "0;0;1;1", keyTimes: "0;0.207;0.21;1" }
+    },
+
+    video: {
+      baselinePlayAt: 0.82,
+      oursPlayAt: 0.21,
+      cyclePauseMs: 2500
+    },
+
+    labels: {
+      baselineBadge: "Baseline",
+      baselineTitle: "Sequential rollout",
+      baselineDescription: "",
+      baselineVizLabel: "",
+      oursBadge: "Fast-LeWM",
+      oursTitle: "Parallel prefix",
+      oursDescription: "",
+      coreLine1: "prefix",
+      coreLine2: "pred",
+      oursVizLabel: ""
+    }
+  };
+
+  function applyMethodCompareAnimationConfig(config = methodCompareAnimationConfig) {
+    const root = document.querySelector("[data-method-compare]");
+    if (!root) return;
+
+    const layoutVars = {
+      maxWidth: "--compare-max-width",
+      gridGap: "--compare-grid-gap",
+      columns: "--compare-columns",
+      cardRadius: "--compare-card-radius",
+      vizRadius: "--compare-viz-radius"
+    };
+
+    const colorVars = {
+      baseArrow: "--compare-base-arrow",
+      fastArrow: "--compare-flow-blue",
+      mutedStroke: "--compare-muted-stroke",
+      strongStroke: "--compare-strong-stroke",
+      note: "--compare-note-color",
+      noteStrong: "--compare-note-strong",
+      pulseFill: "--compare-pulse-fill",
+      pulseStroke: "--compare-pulse-stroke",
+      done: "--compare-done"
+    };
+
+    Object.entries(layoutVars).forEach(([key, cssVar]) => {
+      if (config.layout?.[key]) root.style.setProperty(cssVar, config.layout[key]);
+    });
+
+    Object.entries(colorVars).forEach(([key, cssVar]) => {
+      if (config.colors?.[key]) root.style.setProperty(cssVar, config.colors[key]);
+    });
+
+    if (config.duration) {
+      root.style.setProperty("--compare-cycle", config.duration);
+    }
+
+    config.colors?.baselineGradient?.forEach((stop, index) => {
+      root.querySelectorAll(`[data-gradient-stop="baseline-${index}"]`).forEach((node) => {
+        if (stop.offset) node.setAttribute("offset", stop.offset);
+        if (stop.color) node.setAttribute("stop-color", stop.color);
+      });
+    });
+
+    config.delays?.predictors?.forEach((delay, index) => {
+      root.querySelectorAll(`.pred${index + 1}`).forEach((node) => {
+        node.style.animationDelay = delay;
+      });
+    });
+
+    Object.entries(config.flow || {}).forEach(([name, flowConfig]) => {
+      root.querySelectorAll(`[data-animate="${name}"]`).forEach((node) => {
+        node.setAttribute("repeatCount", "1");
+        node.setAttribute("fill", "freeze");
+        if (config.duration) node.setAttribute("dur", config.duration);
+        if (flowConfig.values) node.setAttribute("values", flowConfig.values);
+        if (flowConfig.keyTimes) node.setAttribute("keyTimes", flowConfig.keyTimes);
+        try {
+          node.beginElement();
+        } catch (error) {
+          // Some browsers restart SMIL animations automatically after attributes change.
+        }
+      });
+    });
+
+    Object.entries(config.labels || {}).forEach(([name, text]) => {
+      root.querySelectorAll(`[data-label="${name}"]`).forEach((node) => {
+        node.textContent = text;
+      });
+    });
+
+    syncPlanningVideos(config);
+  }
+
+  let methodCompareVideoSyncId = 0;
+  let methodCompareVideoTimers = { nextCycle: null, timeouts: [] };
+
+  function parseDurationMs(value) {
+    const text = String(value || "").trim();
+    if (text.endsWith("ms")) return Number.parseFloat(text);
+    if (text.endsWith("s")) return Number.parseFloat(text) * 1000;
+    return Number.parseFloat(text) || 0;
+  }
+
+  function syncPlanningVideos(config = methodCompareAnimationConfig) {
+    const root = document.querySelector("[data-method-compare]");
+    if (!root) return;
+
+    const videos = Array.from(root.querySelectorAll("video[data-video-trigger]"));
+    if (!videos.length) return;
+
+    methodCompareVideoSyncId += 1;
+    const syncId = methodCompareVideoSyncId;
+
+    window.clearTimeout(methodCompareVideoTimers.nextCycle);
+    methodCompareVideoTimers.timeouts.forEach((timer) => window.clearTimeout(timer));
+    methodCompareVideoTimers = { nextCycle: null, timeouts: [] };
+
+    const durationMs = parseDurationMs(config.duration) || 3800;
+    const playSchedule = {
+      baseline: config.video?.baselinePlayAt ?? 0.82,
+      ours: config.video?.oursPlayAt ?? 0.21
+    };
+    const cyclePauseMs = config.video?.cyclePauseMs ?? 5000;
+
+    const resetVideos = () => {
+      videos.forEach((video) => {
+        video.pause();
+        video.classList.remove("is-playing");
+        try {
+          video.currentTime = 0;
+        } catch (error) {
+          // Some browsers block currentTime changes before metadata is loaded.
+        }
+      });
+    };
+
+    const restartPlanningAnimation = () => {
+      root.querySelectorAll("[data-animate]").forEach((node) => {
+        try {
+          node.beginElement();
+        } catch (error) {
+          // Some browsers restart SMIL animations automatically after attributes change.
+        }
+      });
+    };
+
+    const playVideos = (triggerName, onEnded) => {
+      const selectedVideos = Array.from(root.querySelectorAll(`video[data-video-trigger="${triggerName}"]`));
+      let remaining = selectedVideos.length;
+
+      selectedVideos.forEach((video) => {
+        let finishOneVideo = () => {};
+        if (onEnded) {
+          let didFinish = false;
+          finishOneVideo = () => {
+            if (didFinish) return;
+            didFinish = true;
+            remaining -= 1;
+            if (remaining <= 0) onEnded();
+          };
+
+          video.addEventListener("ended", finishOneVideo, { once: true });
+          video.addEventListener("error", finishOneVideo, { once: true });
+        }
+
+        try {
+          video.currentTime = 0;
+        } catch (error) {
+          // Playback can still start even if seeking is not ready yet.
+        }
+
+        const playPromise = video.play();
+        video.classList.add("is-playing");
+        if (playPromise?.catch) {
+          playPromise.catch(() => {
+            video.classList.remove("is-playing");
+            finishOneVideo();
+          });
+        }
+      });
+
+      if (!selectedVideos.length && onEnded) onEnded();
+    };
+
+    const runCycle = () => {
+      if (syncId !== methodCompareVideoSyncId) return;
+
+      window.clearTimeout(methodCompareVideoTimers.nextCycle);
+      methodCompareVideoTimers.timeouts.forEach((timer) => window.clearTimeout(timer));
+      methodCompareVideoTimers.timeouts = [];
+      resetVideos();
+      restartPlanningAnimation();
+
+      let cycleFinished = false;
+      const finishCycle = () => {
+        if (cycleFinished || syncId !== methodCompareVideoSyncId) return;
+        cycleFinished = true;
+        methodCompareVideoTimers.nextCycle = window.setTimeout(runCycle, cyclePauseMs);
+      };
+
+      const oursTimer = window.setTimeout(() => playVideos("ours"), durationMs * playSchedule.ours);
+      const baselineTimer = window.setTimeout(() => playVideos("baseline", finishCycle), durationMs * playSchedule.baseline);
+      methodCompareVideoTimers.timeouts.push(oursTimer, baselineTimer);
+    };
+
+    runCycle();
+  }
+
+  applyMethodCompareAnimationConfig();
+  window.methodCompareAnimationConfig = methodCompareAnimationConfig;
+  window.applyMethodCompareAnimationConfig = applyMethodCompareAnimationConfig;
+</script>
+
+      </div>
+    </header>
+
+    <section id="abstract">
+      <div class="container">
+        <h2 class="section-title">Abstract</h2>
+        <p class="section-lead">
+          Joint-Embedding Predictive Architectures (JEPAs), including LeWorldModel, are promising reconstruction-free visual world models. However, LeWM evaluates candidate action sequences through repeated one-step latent transitions, which makes planning slow and allows latent prediction errors to accumulate over long horizons.
+        </p>
+        <div class="card">
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ullamcorper tellus sed ante aliquam tempus. Etiam porttitor urna feugiat nibh elementum, et tempor dolor mattis. Donec accumsan enim augue, a vulputate nisi sodales sit amet. Proin bibendum ex eget mauris cursus euismod nec et nibh. Maecenas ac gravida ante, nec cursus dui. Vivamus purus nibh, placerat ac purus eget, sagittis vestibulum metus. Sed vestibulum bibendum lectus gravida commodo. Pellentesque auctor leo vitae sagittis suscipit.
+            <strong>Fast-LeWM</strong> replaces repeated local rollout with action-prefix prediction. Given the current latent and a candidate action sequence, Fast-LeWM encodes prefixes of that sequence and predicts the future latents reached after executing those prefixes in parallel. By making action prefixes the basic prediction unit, the model directly learns action effects accumulated over multiple horizons instead of only fitting adjacent one-step transitions. During planning, the terminal prefix token can be used to evaluate the corresponding future latent without explicitly rolling through every intermediate imagined state. Across multiple tasks, Fast-LeWM improves average success over LeWM while substantially
+reducing planning time, achieving lower open-loop latent loss whose growth becomes significantly
+slower as the rollout horizon increases.
           </p>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-<!-- End paper abstract -->
+    </section>
+    
+    <section id="method" style="background: var(--bg);">
+      <div class="container">
+        <h2 class="section-title">Method: action-prefix prediction</h2>
+        <p class="section-lead">
+          Using prefixes of the candidate action sequence as multi-horizon queries, Fast-LeWM predict all future latents in parallel from the observed anchor latent.
+        </p>
+        <div class="grid">
+          <figure class="card wide-figure">
+            <img src="static/images/figure2_pipeline.png" alt="Fast-LeWM training pipeline with visual encoder, causal action-prefix encoder, and parallel latent predictor">
+            <figcaption>Training pipeline. The state token from the current latent conditions a causal action-prefix encoder; each prefix token supervises one future latent horizon.</figcaption>
+          </figure>
 
-
-<!-- Image carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-       <div class="item">
-        <!-- TODO: Replace with your research result images -->
-        <img src="static/images/carousel1.jpg" alt="First research result visualization" loading="lazy"/>
-        <!-- TODO: Replace with description of this result -->
-        <h2 class="subtitle has-text-centered">
-          First image description.
-        </h2>
+        </div>
       </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel2.jpg" alt="Second research result visualization" loading="lazy"/>
-        <h2 class="subtitle has-text-centered">
-          Second image description.
-        </h2>
-      </div>
-      <div class="item">
-        <!-- Your image here -->
-        <img src="static/images/carousel3.jpg" alt="Third research result visualization" loading="lazy"/>
-        <h2 class="subtitle has-text-centered">
-         Third image description.
-       </h2>
-     </div>
-     <div class="item">
-      <!-- Your image here -->
-      <img src="static/images/carousel4.jpg" alt="Fourth research result visualization" loading="lazy"/>
-      <h2 class="subtitle has-text-centered">
-        Fourth image description.
-      </h2>
-    </div>
-  </div>
-</div>
-</div>
-</section>
-<!-- End image carousel -->
+    </section>
 
-
-
-
-<!-- Youtube video -->
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container">
-      <!-- Paper video. -->
-      <h2 class="title is-3">Video Presentation</h2>
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
-          
-          <div class="publication-video">
-            <!-- TODO: Replace with your YouTube video ID -->
-            <iframe src="https://www.youtube.com/embed/JkaxUblCGz0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <section id="results">
+      <div class="container">
+        <h2 class="section-title">Results</h2>
+        <p class="section-lead">
+          Fast-LeWM is evaluated on the same goal-conditioned planning tasks and protocol as LeWM: Two-Room, Reacher, PushT, and OGBench-Cube.
+        </p>
+        <div class="grid">
+          <div class="card span-4">
+            <p class="metric">3.9x</p>
+            <p class="metric-label">lower dynamics-module time 31.4s to 8.0s.</p>
           </div>
+          <div class="card span-4">
+            <p class="metric">48.0%</p>
+            <p class="metric-label">lower full CEM solve time: 54.4s to 28.3s.</p>
+          </div>
+          <div class="card span-4">
+            <p class="metric">90.5%</p>
+            <p class="metric-label">average success rate, improved from LeWM's 85.8%.</p>
+          </div>
+          <div class="card center-table-card">
+            <h3>Planning success (%)</h3>
+            <table>
+              <thead><tr><th>Method</th><th>Two-Room</th><th>Reacher</th><th>PushT</th><th>Cube</th><th>Avg.</th></tr></thead>
+              <tbody>
+                <tr><td>PLDM</td><td>97</td><td>78</td><td>78</td><td>65</td><td>79.5</td></tr>
+                <tr><td>DINO-WM</td><td>100</td><td>79</td><td>74</td><td>86</td><td>84.8</td></tr>
+                <tr><td>LeWM</td><td>87</td><td>86</td><td>96</td><td>74</td><td>85.8</td></tr>
+                <tr class="highlight-row"><td>Fast-LeWM</td><td>98</td><td>88</td><td>96</td><td>80</td><td>90.5</td></tr>
+                <tr><td>Fast-LeWM+ self-consistency</td><td>98</td><td>90</td><td>98</td><td>82</td><td>92.0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure class="card wide-figure open-loop-figure">
+            <img src="static/images/figure3_open_loop.png" alt="Open-loop latent prediction loss across tasks">
+            <figcaption>Open-loop latent prediction. Fast-LeWM reduces both initial latent error and the growth rate of error over longer horizons.</figcaption>
+          </figure>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-<!-- End youtube video -->
+    </section>
 
-
-<!-- Video carousel -->
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title is-3">Another Carousel</h2>
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-video1">
-          <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video1" controls muted loop height="100%" preload="metadata">
-            <!-- Your video file here -->
-            <source src="static/videos/carousel1.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-video2">
-          <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video2" controls muted loop height="100%" preload="metadata">
-            <!-- Your video file here -->
-            <source src="static/videos/carousel2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-video3">
-          <!-- TODO: Add poster image for better preview -->
-          <video poster="" id="video3" controls muted loop height="100%" preload="metadata">
-            <!-- Your video file here -->
-            <source src="static/videos/carousel3.mp4" type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End video carousel -->
-
-
-
-
-
-
-<!-- Paper poster -->
-<section class="hero is-small is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title">Poster</h2>
-
-      <!-- TODO: Replace with your poster PDF -->
-      <iframe  src="static/pdfs/sample.pdf" width="100%" height="550">
-          </iframe>
-        
-      </div>
-    </div>
-  </section>
-<!--End paper poster -->
-
-
-
-<!--BibTex citation -->
-  <section class="section" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <div class="bibtex-header">
-        <h2 class="title">BibTeX</h2>
-        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
-          <i class="fas fa-copy"></i>
-          <span class="copy-text">Copy</span>
-        </button>
-      </div>
-      <pre id="bibtex-code"><code>@article{YourPaperKey2024,
-  title={Your Paper Title Here},
-  author={First Author and Second Author and Third Author},
-  journal={Conference/Journal Name},
-  year={2024},
-  url={https://your-domain.com/your-project-page}
+    <section id="bibtex" style="background: var(--bg);">
+      <div class="container">
+        <h2 class="section-title">BibTeX</h2>
+        <pre class="bibtex"><code>@article{gao2026fastleworldmodel,
+  title   = {Fast LeWorldModel},
+  author  = {Gao, Yuntian and Xu, Xiangyu},
+  year    = {2026},
+  url     = {https://github.com/Yuntian-Gao/Fast-LeWorldModel}
 }</code></pre>
-    </div>
-</section>
-<!--End BibTex citation -->
-
-
-  <footer class="footer">
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-
-          <p>
-            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
-            You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-
-        </div>
       </div>
-    </div>
-  </div>
-</footer>
+    </section>
+  </main>
 
-<!-- Statcounter tracking code -->
-  
-<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
-
-    <!-- End of Statcounter Code -->
-
-  </body>
-  </html>
+</body>
+</html>
