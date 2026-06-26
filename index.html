@@ -386,18 +386,34 @@
   }
 
   .pred {
-    animation: predPulse var(--compare-cycle) infinite;
+    animation-delay: 0s;
+    animation-duration: var(--compare-pred-pulse, 0.66s);
+    animation-fill-mode: both;
+    animation-name: none;
+    animation-timing-function: ease;
     transform-origin: center;
   }
 
-  .pred1 { animation-delay: 0.25s; }
-  .pred2 { animation-delay: 0.55s; }
-  .pred3 { animation-delay: 0.85s; }
-  .pred4 { animation-delay: 1.15s; }
-  .pred5 { animation-delay: 1.45s; }
+  .method-compare.is-cycle-running .pred {
+    animation-name: predPulse;
+  }
+
+  .pred1 { animation-delay: 0.46s; }
+  .pred2 { animation-delay: 0.88s; }
+  .pred3 { animation-delay: 1.30s; }
+  .pred4 { animation-delay: 1.71s; }
+  .pred5 { animation-delay: 2.13s; }
 
   .core {
-    animation: corePulse var(--compare-cycle) infinite;
+    animation-delay: var(--compare-core-delay, 0.34s);
+    animation-duration: var(--compare-core-pulse, 0.72s);
+    animation-fill-mode: both;
+    animation-name: none;
+    animation-timing-function: ease;
+  }
+
+  .method-compare.is-cycle-running .core {
+    animation-name: corePulse;
   }
 
   .arrow-base {
@@ -509,7 +525,7 @@
       stroke: var(--compare-muted-stroke);
       filter: none;
     }
-    18%, 42% {
+    16%, 78% {
       fill: var(--compare-pulse-fill);
       stroke: var(--compare-pulse-stroke);
       filter: drop-shadow(0 0 8px rgba(59,130,246,0.18));
@@ -522,7 +538,7 @@
       stroke: var(--compare-strong-stroke);
       filter: none;
     }
-    28%, 68% {
+    12%, 78% {
       fill: rgba(140,205,246,0.11);
       stroke: #68acd8;
       filter: drop-shadow(0 0 8px rgba(104,172,216,0.14));
@@ -944,9 +960,15 @@
       ]
     },
 
+    modulePulse: {
+      predictorDuration: "0.66s",
+      coreDuration: "0.72s",
+      coreDelay: "0.34s"
+    },
+
     // Delay each module so highlights follow the arrow direction.
     delays: {
-      predictors: ["0.25s", "0.55s", "0.85s", "1.15s", "1.45s"]
+      predictors: ["0.46s", "0.88s", "1.30s", "1.71s", "2.13s"]
     },
 
     // values/keyTimes control clipped arrow progress and Planning/Done opacity over time.
@@ -961,6 +983,7 @@
     },
 
     video: {
+      playbackRate: 0.7,
       baselinePlayAt: 0.82,
       oursPlayAt: 0.21,
       cyclePauseMs: 2500
@@ -1014,6 +1037,18 @@
 
     if (config.duration) {
       root.style.setProperty("--compare-cycle", config.duration);
+    }
+
+    if (config.modulePulse?.predictorDuration) {
+      root.style.setProperty("--compare-pred-pulse", config.modulePulse.predictorDuration);
+    }
+
+    if (config.modulePulse?.coreDuration) {
+      root.style.setProperty("--compare-core-pulse", config.modulePulse.coreDuration);
+    }
+
+    if (config.modulePulse?.coreDelay) {
+      root.style.setProperty("--compare-core-delay", config.modulePulse.coreDelay);
     }
 
     config.colors?.baselineGradient?.forEach((stop, index) => {
@@ -1082,12 +1117,14 @@
       baseline: config.video?.baselinePlayAt ?? 0.82,
       ours: config.video?.oursPlayAt ?? 0.21
     };
+    const playbackRate = config.video?.playbackRate ?? 1;
     const cyclePauseMs = config.video?.cyclePauseMs ?? 5000;
 
     const resetVideos = () => {
       videos.forEach((video) => {
         video.pause();
         video.classList.remove("is-playing");
+        video.playbackRate = playbackRate;
         try {
           video.currentTime = 0;
         } catch (error) {
@@ -1097,6 +1134,10 @@
     };
 
     const restartPlanningAnimation = () => {
+      root.classList.remove("is-cycle-running");
+      void root.offsetWidth;
+      root.classList.add("is-cycle-running");
+
       root.querySelectorAll("[data-animate]").forEach((node) => {
         try {
           node.beginElement();
@@ -1111,6 +1152,7 @@
       let remaining = selectedVideos.length;
 
       selectedVideos.forEach((video) => {
+        video.playbackRate = playbackRate;
         let finishOneVideo = () => {};
         if (onEnded) {
           let didFinish = false;
@@ -1266,4 +1308,3 @@ slower as the rollout horizon increases.
 
 </body>
 </html>
-
