@@ -166,6 +166,108 @@
       margin: 0 auto;
     }
     .open-loop-figure { width: min(100%, 1120px); }
+    .hero-rollout {
+      width: min(100%, 1160px);
+      margin: 36px auto 0;
+      padding: 0;
+      text-align: left;
+    }
+    .hero-rollout .section-title {
+      margin-bottom: 18px;
+    }
+    .open-loop-rollout-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      gap: 14px;
+      align-items: start;
+    }
+    .rollout-panel {
+      min-width: 0;
+    }
+    .rollout-title {
+      min-height: 24px;
+      margin: 0 0 7px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.2;
+      text-align: center;
+    }
+    .rollout-media {
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 10px;
+      background: #f8fbff;
+    }
+    .rollout-media img,
+    .open-loop-video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .rollout-status {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      min-height: 18px;
+      margin: 6px 1px 3px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .rollout-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      white-space: nowrap;
+    }
+    .rollout-state::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.14);
+    }
+    .rollout-panel.is-complete .rollout-state {
+      color: #047857;
+    }
+    .rollout-panel.is-complete .rollout-state::before {
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+    }
+    .rollout-progress {
+      height: 4px;
+      margin-top: 4px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e4edf8;
+    }
+    .rollout-progress-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #7dd3fc 0%, #60a5fa 100%);
+      transform: scaleX(0);
+      transform-origin: left center;
+      animation: rolloutProgress var(--rollout-duration, 4s) linear forwards;
+      animation-play-state: paused;
+    }
+    .rollout-panel.is-playing .rollout-progress-fill {
+      animation-play-state: running;
+    }
+    @keyframes rolloutProgress {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
     .metric { font-size: 36px; line-height: 1; font-weight: 850; letter-spacing: -0.04em; margin: 0 0 8px; }
     .metric-label { color: var(--muted); margin: 0; }
     .pill {
@@ -213,9 +315,13 @@
     footer { padding: 42px 0 60px; color: var(--muted); border-top: 1px solid var(--line); }
     @media (max-width: 850px) {
       .span-4, .span-5, .span-6, .span-7 { grid-column: span 12; }
+      .open-loop-rollout-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .hero { padding-top: 50px; }
       .nav-inner { align-items: flex-start; flex-direction: column; }
       .nav-links { justify-content: flex-start; gap: 12px; }
+    }
+    @media (max-width: 520px) {
+      .open-loop-rollout-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -224,6 +330,7 @@
     <div class="container nav-inner">
       <a class="brand" href="#top">Fast LeWorldModel</a>
       <div class="nav-links">
+        <a href="#open-loop-rollout">Open Loop</a>
         <a href="#abstract">Abstract</a>
         <a href="#method">Method</a>
         <a href="#results">Results</a>
@@ -249,6 +356,55 @@
           <a class="button primary" href="https://arxiv.org/abs/2606.26217" target="_blank">Paper PDF</a>
           <a class="button" href="https://github.com/Yuntian-Gao/Fast-LeWorldModel" target="_blank">Code</a>
         </div>
+
+        <section id="open-loop-rollout" class="hero-rollout">
+          <h2 class="section-title">Open-Loop Rollout Visualization</h2>
+          <div class="open-loop-rollout-grid">
+            <div class="rollout-panel">
+              <h3 class="rollout-title">start</h3>
+              <div class="rollout-media">
+                <img src="static/images/tworoom_start.png" alt="Two-Room open-loop rollout start frame">
+              </div>
+            </div>
+
+            <div class="rollout-panel">
+              <h3 class="rollout-title">goal</h3>
+              <div class="rollout-media">
+                <img src="static/images/tworoom_goal.png" alt="Two-Room open-loop rollout goal frame">
+              </div>
+            </div>
+
+            <div class="rollout-panel" style="--rollout-duration: 4s;">
+              <h3 class="rollout-title">LeWM</h3>
+              <div class="rollout-media">
+                <video class="open-loop-video" data-rollout-video data-rollout-rate="1" muted playsinline preload="auto">
+                  <source src="static/videos/baseline_pred_decode.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="rollout-status" aria-live="polite">
+                <span class="rollout-state" data-rollout-state>Ready</span>
+              </div>
+              <div class="rollout-progress" aria-hidden="true">
+                <div class="rollout-progress-fill"></div>
+              </div>
+            </div>
+
+            <div class="rollout-panel" style="--rollout-duration: 0.5s;">
+              <h3 class="rollout-title">Fast-LeWM</h3>
+              <div class="rollout-media">
+                <video class="open-loop-video" data-rollout-video data-rollout-rate="8" muted playsinline preload="auto">
+                  <source src="static/videos/ours_pred_decode.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="rollout-status" aria-live="polite">
+                <span class="rollout-state" data-rollout-state>Ready</span>
+              </div>
+              <div class="rollout-progress" aria-hidden="true">
+                <div class="rollout-progress-fill"></div>
+              </div>
+            </div>
+          </div>
+        </section>
 <!--
   Method comparison animation notes:
   - Quick visual changes: edit the CSS variables under .method-compare below.
@@ -291,8 +447,8 @@
   }
 
   .method-card:nth-child(1) { grid-column: 1; grid-row: 1; }
-  .method-card:nth-child(3) { grid-column: 2; grid-row: 1; }
-  .method-card:nth-child(2) { grid-column: 1; grid-row: 2; }
+  .method-card:nth-child(2) { grid-column: 2; grid-row: 1; }
+  .method-card:nth-child(3) { grid-column: 1; grid-row: 2; }
   .method-card:nth-child(4) { grid-column: 2; grid-row: 2; }
 
   .method-card {
@@ -318,7 +474,7 @@
     vertical-align: middle;
   }
 
-  .method-card.baseline .method-badge {
+  .method-card.LeWM .method-badge {
     background: #eef2f7;
     color: #475569;
   }
@@ -342,8 +498,74 @@
     display: none;
   }
 
+  .cem-timer {
+    margin-top: 8px;
+  }
+
+  .cem-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    min-height: 18px;
+    margin: 0 1px 3px;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .cem-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .cem-state::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.14);
+  }
+
+  .method-card.is-cem-complete .cem-state {
+    color: #047857;
+  }
+
+  .method-card.is-cem-complete .cem-state::before {
+    background: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+  }
+
+  .cem-progress {
+    height: 4px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e4edf8;
+  }
+
+  .cem-progress-fill {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #7dd3fc 0%, #60a5fa 100%);
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: cemProgress var(--cem-duration, 4s) linear forwards;
+    animation-play-state: paused;
+  }
+
+  .method-card.is-cem-running .cem-progress-fill {
+    animation-play-state: running;
+  }
+
   .viz-shell {
-    margin-top: 3px;
+    margin-top: 6px;
     padding: 1px;
     border-radius: var(--compare-viz-radius);
     border: 1px solid rgba(148, 163, 184, 0.18);
@@ -356,6 +578,21 @@
     width: 100%;
     height: auto;
     display: block;
+  }
+
+  .viz-shell .arrow-base,
+  .viz-shell .arrow-soft-blue,
+  .viz-shell g[clip-path] > path[fill^="url"] {
+    transform: scaleY(0.32);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .viz-shell .shape,
+  .viz-shell .shape-strong {
+    transform: scaleY(0.72);
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
   .viz-label {
@@ -387,22 +624,23 @@
 
   .pred {
     animation-delay: 0s;
-    animation-duration: var(--compare-pred-pulse, 0.66s);
+    animation-duration: var(--compare-pred-pulse, var(--compare-cycle, 1.2s));
     animation-fill-mode: both;
     animation-name: none;
-    animation-timing-function: ease;
+    animation-timing-function: linear;
     transform-origin: center;
   }
 
-  .method-compare.is-cycle-running .pred {
+  .method-card.is-cem-running .pred {
     animation-name: predPulse;
+    animation-iteration-count: infinite;
   }
 
-  .pred1 { animation-delay: 0.46s; }
-  .pred2 { animation-delay: 0.88s; }
-  .pred3 { animation-delay: 1.30s; }
-  .pred4 { animation-delay: 1.71s; }
-  .pred5 { animation-delay: 2.13s; }
+  .pred1 { animation-delay: 0.20s; }
+  .pred2 { animation-delay: 0.34s; }
+  .pred3 { animation-delay: 0.48s; }
+  .pred4 { animation-delay: 0.62s; }
+  .pred5 { animation-delay: 0.76s; }
 
   .core {
     animation-delay: var(--compare-core-delay, 0.34s);
@@ -412,8 +650,9 @@
     animation-timing-function: ease;
   }
 
-  .method-compare.is-cycle-running .core {
+  .method-card.is-cem-running .core {
     animation-name: corePulse;
+    animation-iteration-count: infinite;
   }
 
   .arrow-base {
@@ -430,7 +669,7 @@
   .svg-note {
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     fill: var(--compare-note-color);
-    font-size: 9px;
+    font-size: 7.5px;
     font-weight: 700;
   }
 
@@ -439,12 +678,14 @@
   }
 
   .planning-label {
+    display: none;
     fill: var(--compare-note-color);
     font-size: 11px;
     font-weight: 800;
   }
 
   .done-check {
+    display: none;
     opacity: 0;
   }
 
@@ -520,12 +761,12 @@
   }
 
   @keyframes predPulse {
-    0%, 100% {
+    0%, 2%, 11%, 100% {
       fill: rgba(255,255,255,0.78);
       stroke: var(--compare-muted-stroke);
       filter: none;
     }
-    16%, 78% {
+    3%, 8% {
       fill: var(--compare-pulse-fill);
       stroke: var(--compare-pulse-stroke);
       filter: drop-shadow(0 0 8px rgba(59,130,246,0.18));
@@ -543,6 +784,11 @@
       stroke: #68acd8;
       filter: drop-shadow(0 0 8px rgba(104,172,216,0.14));
     }
+  }
+
+  @keyframes cemProgress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
   }
 
   @media (max-width: 1050px) {
@@ -565,23 +811,32 @@
 </style>
 
 <div class="method-compare" data-method-compare>
-  <h2 class="section-title planning-demo-title">Planning demo</h2>
+  <h2 class="section-title planning-demo-title">Planning</h2>
   <div class="method-compare-grid">
 
-    <!-- Group 1, baseline: compact planning-progress bar with five sequential predictors. -->
-    <div class="method-card baseline">
-      <span class="method-badge" data-label="baselineBadge">Baseline</span>
+    <!-- Group 1, LeWM: compact planning-progress bar with five sequential predictors. -->
+    <div class="method-card LeWM">
+      <span class="method-badge" data-label="baselineBadge">LeWM</span>
       <h3 data-label="baselineTitle">Sequential rollout</h3>
       <p data-label="baselineDescription"></p>
 
+      <div class="cem-timer" data-cem-trigger="LeWM">
+        <div class="cem-status" aria-live="polite">
+          <span class="cem-state" data-cem-state>CEM ready</span>
+        </div>
+        <div class="cem-progress" aria-hidden="true">
+          <div class="cem-progress-fill"></div>
+        </div>
+      </div>
+
       <div class="viz-shell">
-        <svg viewBox="0 0 360 72" role="img" aria-label="Baseline sequential rollout progress">
+        <svg viewBox="0 20 360 38" role="img" aria-label="LeWMsequential rollout progress">
           <defs>
             <linearGradient id="baselineGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#7dd3fc" data-gradient-stop="baseline-0"/>
-              <stop offset="45%" stop-color="#60a5fa" data-gradient-stop="baseline-1"/>
-              <stop offset="75%" stop-color="#f9a8d4" data-gradient-stop="baseline-2"/>
-              <stop offset="100%" stop-color="#fca5a5" data-gradient-stop="baseline-3"/>
+              <stop offset="0%" stop-color="#7dd3fc" data-gradient-stop="LeWM-0"/>
+              <stop offset="45%" stop-color="#60a5fa" data-gradient-stop="LeWM-1"/>
+              <stop offset="75%" stop-color="#f9a8d4" data-gradient-stop="LeWM-2"/>
+              <stop offset="100%" stop-color="#fca5a5" data-gradient-stop="LeWM-3"/>
             </linearGradient>
 
             <clipPath id="leftFlowClip1">
@@ -634,15 +889,15 @@
         <div class="video-pane">
           <div class="video-label">GT</div>
           <div class="video-frame">
-            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+            <video class="planning-video" data-video-trigger="LeWM" muted playsinline preload="auto">
               <source src="static/videos/gt.mp4" type="video/mp4">
             </video>
           </div>
         </div>
         <div class="video-pane">
-          <div class="video-label">Baseline</div>
+          <div class="video-label">LeWM</div>
           <div class="video-frame">
-            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+            <video class="planning-video" data-video-trigger="LeWM" muted playsinline preload="auto">
               <source src="static/videos/baseline_cube.mp4" type="video/mp4">
             </video>
           </div>
@@ -658,19 +913,28 @@
       <h3 data-label="oursTitle">Parallel prefix</h3>
       <p data-label="oursDescription"></p>
 
+      <div class="cem-timer" data-cem-trigger="ours">
+        <div class="cem-status" aria-live="polite">
+          <span class="cem-state" data-cem-state>CEM ready</span>
+        </div>
+        <div class="cem-progress" aria-hidden="true">
+          <div class="cem-progress-fill"></div>
+        </div>
+      </div>
+
       <div class="viz-shell">
-        <svg viewBox="0 0 360 72" role="img" aria-label="Fast LeWorldModel parallel prediction progress">
+        <svg viewBox="0 20 360 38" role="img" aria-label="Fast LeWorldModel parallel prediction progress">
           <defs>
             <clipPath id="rightInputClip1">
               <rect x="18" y="0" width="0" height="72">
                 <animate
                   data-animate="oursInputFlow"
                   attributeName="width"
-                  dur="3.8s"
+                  dur="0.3s"
                   repeatCount="1"
                   fill="freeze"
                   values="0;0;122;122"
-                  keyTimes="0;0.02;0.12;1" />
+                  keyTimes="0;0.02;0.28;1" />
               </rect>
             </clipPath>
 
@@ -679,11 +943,11 @@
                 <animate
                   data-animate="oursOutputFlow"
                   attributeName="width"
-                  dur="3.8s"
+                  dur="0.3s"
                   repeatCount="1"
                   fill="freeze"
-                  values="0;0;138;138"
-                  keyTimes="0;0.07;0.21;1" />
+                  values="0;0;138"
+                  keyTimes="0;0.28;1" />
               </rect>
             </clipPath>
           </defs>
@@ -750,19 +1014,28 @@
     </div>
 
     <!-- Group 2 placeholder pair: duplicate this pair's labels later if each video needs custom copy. -->
-    <div class="method-card baseline">
-      <span class="method-badge" data-label="baselineBadge">Baseline</span>
+    <div class="method-card LeWM">
+      <span class="method-badge" data-label="baselineBadge">LeWM</span>
       <h3 data-label="baselineTitle">Sequential rollout</h3>
       <p data-label="baselineDescription"></p>
 
+      <div class="cem-timer" data-cem-trigger="LeWM">
+        <div class="cem-status" aria-live="polite">
+          <span class="cem-state" data-cem-state>CEM ready</span>
+        </div>
+        <div class="cem-progress" aria-hidden="true">
+          <div class="cem-progress-fill"></div>
+        </div>
+      </div>
+
       <div class="viz-shell">
-        <svg viewBox="0 0 360 72" role="img" aria-label="Baseline sequential rollout progress">
+        <svg viewBox="0 20 360 38" role="img" aria-label="LeWMsequential rollout progress">
           <defs>
             <linearGradient id="baselineGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#7dd3fc" data-gradient-stop="baseline-0"/>
-              <stop offset="45%" stop-color="#60a5fa" data-gradient-stop="baseline-1"/>
-              <stop offset="75%" stop-color="#f9a8d4" data-gradient-stop="baseline-2"/>
-              <stop offset="100%" stop-color="#fca5a5" data-gradient-stop="baseline-3"/>
+              <stop offset="0%" stop-color="#7dd3fc" data-gradient-stop="LeWM-0"/>
+              <stop offset="45%" stop-color="#60a5fa" data-gradient-stop="LeWM-1"/>
+              <stop offset="75%" stop-color="#f9a8d4" data-gradient-stop="LeWM-2"/>
+              <stop offset="100%" stop-color="#fca5a5" data-gradient-stop="LeWM-3"/>
             </linearGradient>
 
             <clipPath id="leftFlowClip2">
@@ -812,15 +1085,15 @@
         <div class="video-pane">
           <div class="video-label">GT</div>
           <div class="video-frame">
-            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+            <video class="planning-video" data-video-trigger="LeWM" muted playsinline preload="auto">
               <source src="static/videos/gt_pusht.mp4" type="video/mp4">
             </video>
           </div>
         </div>
         <div class="video-pane">
-          <div class="video-label">Baseline</div>
+          <div class="video-label">LeWM</div>
           <div class="video-frame">
-            <video class="planning-video" data-video-trigger="baseline" muted playsinline preload="auto">
+            <video class="planning-video" data-video-trigger="LeWM" muted playsinline preload="auto">
               <source src="static/videos/baseline_pusht.mp4" type="video/mp4">
             </video>
           </div>
@@ -835,19 +1108,28 @@
       <h3 data-label="oursTitle">Parallel prefix</h3>
       <p data-label="oursDescription"></p>
 
+      <div class="cem-timer" data-cem-trigger="ours">
+        <div class="cem-status" aria-live="polite">
+          <span class="cem-state" data-cem-state>CEM ready</span>
+        </div>
+        <div class="cem-progress" aria-hidden="true">
+          <div class="cem-progress-fill"></div>
+        </div>
+      </div>
+
       <div class="viz-shell">
-        <svg viewBox="0 0 360 72" role="img" aria-label="Fast LeWorldModel parallel prediction progress">
+        <svg viewBox="0 20 360 38" role="img" aria-label="Fast LeWorldModel parallel prediction progress">
           <defs>
             <clipPath id="rightInputClip2">
               <rect x="18" y="0" width="0" height="72">
                 <animate
                   data-animate="oursInputFlow"
                   attributeName="width"
-                  dur="3.8s"
+                  dur="0.3s"
                   repeatCount="1"
                   fill="freeze"
                   values="0;0;122;122"
-                  keyTimes="0;0.02;0.12;1" />
+                  keyTimes="0;0.02;0.28;1" />
               </rect>
             </clipPath>
 
@@ -856,11 +1138,11 @@
                 <animate
                   data-animate="oursOutputFlow"
                   attributeName="width"
-                  dur="3.8s"
+                  dur="0.3s"
                   repeatCount="1"
                   fill="freeze"
-                  values="0;0;138;138"
-                  keyTimes="0;0.07;0.21;1" />
+                  values="0;0;138"
+                  keyTimes="0;0.28;1" />
               </rect>
             </clipPath>
           </defs>
@@ -913,7 +1195,7 @@
           <div class="video-label">Fast-LeWM</div>
           <div class="video-frame">
             <video class="planning-video" data-video-trigger="ours" muted playsinline preload="auto">
-              <source src="static/videos/our_pusht.mp4" type="video/mp4">
+              <source src="static/videos/ours_pusht.mp4" type="video/mp4">
             </video>
           </div>
         </div>
@@ -932,7 +1214,7 @@
     SVG <animate> timing, gradient stops, delays, and visible labels.
   */
   const methodCompareAnimationConfig = {
-    duration: "3.8s", // Planning-animation duration; the next cycle waits for the baseline video to finish.
+    duration: "1.2s", // Decorative dynamics animation; CEM timing below controls video playback.
 
     layout: {
       maxWidth: "1160px",
@@ -961,36 +1243,36 @@
     },
 
     modulePulse: {
-      predictorDuration: "0.66s",
+      predictorDuration: "1.2s",
       coreDuration: "0.72s",
-      coreDelay: "0.34s"
+      coreDelay: "0.18s"
     },
 
-    // Delay each module so highlights follow the arrow direction.
+    // LeWMmodules flash at a constant 0.14s interval; Fast-LeWM starts at roughly 1.25x one interval.
     delays: {
-      predictors: ["0.46s", "0.88s", "1.30s", "1.71s", "2.13s"]
+      predictors: ["0.20s", "0.34s", "0.48s", "0.62s", "0.76s"]
     },
 
-    // values/keyTimes control clipped arrow progress and Planning/Done opacity over time.
+    // values/keyTimes control clipped arrow progress. The decorative bar repeats during each CEM solve.
     flow: {
-      baselineFlow: { values: "0;0;324;324", keyTimes: "0;0.05;0.82;1" },
+      baselineFlow: { values: "0;0;324;324", keyTimes: "0;0.05;0.82;1", repeatCount: "indefinite", fill: "remove" },
       baselinePlanning: { values: "1;1;0;0", keyTimes: "0;0.78;0.82;1" },
       baselineDone: { values: "0;0;1;1", keyTimes: "0;0.78;0.82;1" },
-      oursInputFlow: { values: "0;0;122;122", keyTimes: "0;0.02;0.12;1" },
-      oursOutputFlow: { values: "0;0;138;138", keyTimes: "0;0.07;0.21;1" },
+      oursInputFlow: { duration: "0.3s", values: "0;0;122;122", keyTimes: "0;0.02;0.28;1", repeatCount: "indefinite", fill: "remove" },
+      oursOutputFlow: { duration: "0.3s", values: "0;0;138", keyTimes: "0;0.28;1", repeatCount: "indefinite", fill: "remove" },
       oursPlanning: { values: "1;1;0;0", keyTimes: "0;0.207;0.21;1" },
       oursDone: { values: "0;0;1;1", keyTimes: "0;0.207;0.21;1" }
     },
 
     video: {
       playbackRate: 0.7,
-      baselinePlayAt: 0.82,
-      oursPlayAt: 0.21,
+      baselineCemMs: 4000,
+      fastCemSpeedup: 2,
       cyclePauseMs: 2500
     },
 
     labels: {
-      baselineBadge: "Baseline",
+      baselineBadge: "LeWM",
       baselineTitle: "Sequential rollout",
       baselineDescription: "",
       baselineVizLabel: "",
@@ -1052,7 +1334,7 @@
     }
 
     config.colors?.baselineGradient?.forEach((stop, index) => {
-      root.querySelectorAll(`[data-gradient-stop="baseline-${index}"]`).forEach((node) => {
+      root.querySelectorAll(`[data-gradient-stop="LeWM-${index}"]`).forEach((node) => {
         if (stop.offset) node.setAttribute("offset", stop.offset);
         if (stop.color) node.setAttribute("stop-color", stop.color);
       });
@@ -1066,16 +1348,12 @@
 
     Object.entries(config.flow || {}).forEach(([name, flowConfig]) => {
       root.querySelectorAll(`[data-animate="${name}"]`).forEach((node) => {
-        node.setAttribute("repeatCount", "1");
-        node.setAttribute("fill", "freeze");
-        if (config.duration) node.setAttribute("dur", config.duration);
+        node.setAttribute("repeatCount", flowConfig.repeatCount || "1");
+        node.setAttribute("fill", flowConfig.fill || "freeze");
+        const duration = flowConfig.duration || config.duration;
+        if (duration) node.setAttribute("dur", duration);
         if (flowConfig.values) node.setAttribute("values", flowConfig.values);
         if (flowConfig.keyTimes) node.setAttribute("keyTimes", flowConfig.keyTimes);
-        try {
-          node.beginElement();
-        } catch (error) {
-          // Some browsers restart SMIL animations automatically after attributes change.
-        }
       });
     });
 
@@ -1112,13 +1390,18 @@
     methodCompareVideoTimers.timeouts.forEach((timer) => window.clearTimeout(timer));
     methodCompareVideoTimers = { nextCycle: null, timeouts: [] };
 
-    const durationMs = parseDurationMs(config.duration) || 3800;
-    const playSchedule = {
-      baseline: config.video?.baselinePlayAt ?? 0.82,
-      ours: config.video?.oursPlayAt ?? 0.21
-    };
     const playbackRate = config.video?.playbackRate ?? 1;
+    const baselineCemMs = config.video?.baselineCemMs ?? 4000;
+    const fastCemSpeedup = config.video?.fastCemSpeedup ?? 2;
+    const cemSchedule = {
+      LeWM: baselineCemMs,
+      ours: baselineCemMs / fastCemSpeedup
+    };
     const cyclePauseMs = config.video?.cyclePauseMs ?? 5000;
+    const cardsByTrigger = {
+      LeWM: Array.from(root.querySelectorAll(".method-card.LeWM")),
+      ours: Array.from(root.querySelectorAll(".method-card.ours"))
+    };
 
     const resetVideos = () => {
       videos.forEach((video) => {
@@ -1133,57 +1416,102 @@
       });
     };
 
-    const restartPlanningAnimation = () => {
-      root.classList.remove("is-cycle-running");
-      void root.offsetWidth;
-      root.classList.add("is-cycle-running");
+    const resetCemTimer = (card, triggerName) => {
+      const fill = card.querySelector(".cem-progress-fill");
+      const state = card.querySelector("[data-cem-state]");
+      card.classList.remove("is-cem-running", "is-cem-complete");
+      card.style.setProperty("--cem-duration", `${cemSchedule[triggerName]}ms`);
+      if (state) state.textContent = "CEM ready";
+      if (fill) {
+        fill.style.animation = "none";
+        void fill.offsetWidth;
+        fill.style.animation = "";
+      }
+    };
 
-      root.querySelectorAll("[data-animate]").forEach((node) => {
+    const setCemRunning = (triggerName) => {
+      cardsByTrigger[triggerName].forEach((card) => {
+        const state = card.querySelector("[data-cem-state]");
+        if (state) state.textContent = "CEM solving...";
+        card.classList.add("is-cem-running");
+        card.querySelectorAll("[data-animate]").forEach((node) => {
+          try {
+            node.beginElement();
+          } catch (error) {
+            // Some browsers restart SMIL animations automatically after attributes change.
+          }
+        });
+      });
+    };
+
+    const stopCardAnimation = (card) => {
+      card.querySelectorAll("[data-animate]").forEach((node) => {
         try {
-          node.beginElement();
+          node.endElement();
         } catch (error) {
-          // Some browsers restart SMIL animations automatically after attributes change.
+          // SMIL controls may be unavailable in some browsers.
         }
       });
     };
 
-    const playVideos = (triggerName, onEnded) => {
-      const selectedVideos = Array.from(root.querySelectorAll(`video[data-video-trigger="${triggerName}"]`));
-      let remaining = selectedVideos.length;
+    const setCemComplete = (triggerName) => {
+      cardsByTrigger[triggerName].forEach((card) => {
+        const state = card.querySelector("[data-cem-state]");
+        if (state) state.textContent = "CEM complete";
+        card.classList.remove("is-cem-running");
+        card.classList.add("is-cem-complete");
+        stopCardAnimation(card);
+      });
+    };
 
-      selectedVideos.forEach((video) => {
-        video.playbackRate = playbackRate;
-        let finishOneVideo = () => {};
-        if (onEnded) {
+    const restartPlanningAnimation = () => {
+      root.classList.remove("is-cycle-running");
+      void root.offsetWidth;
+      root.classList.add("is-cycle-running");
+    };
+
+    const playVideos = (triggerName, { keepBrightAfterEnd = false } = {}) => {
+      const selectedVideos = Array.from(root.querySelectorAll(`video[data-video-trigger="${triggerName}"]`));
+      if (!selectedVideos.length) return Promise.resolve();
+
+      return new Promise((resolve) => {
+        let remaining = selectedVideos.length;
+
+        selectedVideos.forEach((video) => {
           let didFinish = false;
-          finishOneVideo = () => {
+          const finishOneVideo = () => {
             if (didFinish) return;
             didFinish = true;
+            if (!keepBrightAfterEnd) {
+              video.classList.remove("is-playing");
+            }
             remaining -= 1;
-            if (remaining <= 0) onEnded();
+            if (remaining <= 0) resolve();
           };
 
+          video.playbackRate = playbackRate;
           video.addEventListener("ended", finishOneVideo, { once: true });
           video.addEventListener("error", finishOneVideo, { once: true });
-        }
 
-        try {
-          video.currentTime = 0;
-        } catch (error) {
-          // Playback can still start even if seeking is not ready yet.
-        }
+          try {
+            video.currentTime = 0;
+          } catch (error) {
+            // Playback can still start even if seeking is not ready yet.
+          }
 
-        const playPromise = video.play();
-        video.classList.add("is-playing");
-        if (playPromise?.catch) {
-          playPromise.catch(() => {
-            video.classList.remove("is-playing");
-            finishOneVideo();
-          });
-        }
+          const playPromise = video.play();
+          video.classList.add("is-playing");
+          if (playPromise?.catch) {
+            playPromise.catch(finishOneVideo);
+          }
+        });
       });
+    };
 
-      if (!selectedVideos.length && onEnded) onEnded();
+    const applyVideoMask = () => {
+      videos.forEach((video) => {
+        video.classList.remove("is-playing");
+      });
     };
 
     const runCycle = () => {
@@ -1194,6 +1522,11 @@
       methodCompareVideoTimers.timeouts = [];
       resetVideos();
       restartPlanningAnimation();
+      Object.entries(cardsByTrigger).forEach(([triggerName, cards]) => {
+        cards.forEach((card) => resetCemTimer(card, triggerName));
+      });
+      void root.offsetWidth;
+      Object.keys(cardsByTrigger).forEach(setCemRunning);
 
       let cycleFinished = false;
       const finishCycle = () => {
@@ -1202,9 +1535,28 @@
         methodCompareVideoTimers.nextCycle = window.setTimeout(runCycle, cyclePauseMs);
       };
 
-      const oursTimer = window.setTimeout(() => playVideos("ours"), durationMs * playSchedule.ours);
-      const baselineTimer = window.setTimeout(() => playVideos("baseline", finishCycle), durationMs * playSchedule.baseline);
-      methodCompareVideoTimers.timeouts.push(oursTimer, baselineTimer);
+      const scheduleCemCompletion = (triggerName) => new Promise((resolve) => {
+        const timer = window.setTimeout(() => {
+          if (syncId !== methodCompareVideoSyncId) {
+            resolve();
+            return;
+          }
+
+          setCemComplete(triggerName);
+          playVideos(triggerName, { keepBrightAfterEnd: true }).then(resolve);
+        }, cemSchedule[triggerName]);
+
+        methodCompareVideoTimers.timeouts.push(timer);
+      });
+
+      Promise.all([
+        scheduleCemCompletion("ours"),
+        scheduleCemCompletion("LeWM")
+      ])
+        .then(() => {
+          applyVideoMask();
+          finishCycle();
+        });
     };
 
     runCycle();
@@ -1233,7 +1585,7 @@ slower as the rollout horizon increases.
         </div>
       </div>
     </section>
-    
+
     <section id="method" style="background: var(--bg);">
       <div class="container">
         <h2 class="section-title">Method: action-prefix prediction</h2>
@@ -1306,5 +1658,123 @@ slower as the rollout horizon increases.
     </section>
   </main>
 
+  <script>
+    function initOpenLoopRollout() {
+      const videos = Array.from(document.querySelectorAll("[data-rollout-video]"));
+      if (!videos.length) return;
+      const cyclePauseMs = 2000;
+      let cycleId = 0;
+      let nextCycleTimer = null;
+
+      const items = videos.map((video) => ({
+        video,
+        panel: video.closest(".rollout-panel"),
+        rate: Number.parseFloat(video.dataset.rolloutRate || "1") || 1,
+        stateNode: video.closest(".rollout-panel")?.querySelector("[data-rollout-state]"),
+        wallDuration: 0
+      }));
+
+      const updateStatus = (item, state) => {
+        if (item.stateNode) item.stateNode.textContent = state;
+      };
+
+      const setTiming = (item) => {
+        const { video, panel, rate } = item;
+        video.loop = false;
+        video.playbackRate = rate;
+        if (Number.isFinite(video.duration) && video.duration > 0) {
+          item.wallDuration = video.duration / rate;
+          panel?.style.setProperty("--rollout-duration", `${item.wallDuration}s`);
+        }
+        updateStatus(item, "Ready");
+      };
+
+      const resetProgress = (item) => {
+        const fill = item.panel?.querySelector(".rollout-progress-fill");
+        item.panel?.classList.remove("is-playing", "is-complete");
+        if (fill) {
+          fill.style.animation = "none";
+          void fill.offsetWidth;
+          fill.style.animation = "";
+        }
+        updateStatus(item, "Ready");
+      };
+
+      const waitForMetadata = Promise.all(items.map((item) => {
+        if (item.video.readyState >= 1) {
+          setTiming(item);
+          return Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+          const finish = () => {
+            setTiming(item);
+            resolve();
+          };
+          item.video.addEventListener("loadedmetadata", finish, { once: true });
+          item.video.addEventListener("error", resolve, { once: true });
+        });
+      }));
+
+      const runCycle = () => {
+        const activeCycleId = ++cycleId;
+        window.clearTimeout(nextCycleTimer);
+
+        items.forEach((item) => {
+          setTiming(item);
+          item.video.pause();
+          try {
+            item.video.currentTime = 0;
+          } catch (error) {
+            // Metadata can arrive later in some browsers; playback still works after it loads.
+          }
+          resetProgress(item);
+        });
+
+        window.requestAnimationFrame(() => {
+          const playAndWait = (item) => new Promise((resolve) => {
+            let finished = false;
+            let onEnded = null;
+            let onError = null;
+
+            const finish = (state = "Prediction complete", isComplete = true) => {
+              if (finished) return;
+              finished = true;
+              item.video.removeEventListener("ended", onEnded);
+              item.video.removeEventListener("error", onError);
+              item.panel?.classList.remove("is-playing");
+              item.panel?.classList.toggle("is-complete", isComplete);
+              updateStatus(item, state);
+              resolve();
+            };
+
+            onEnded = () => finish();
+            onError = () => finish("Unavailable", false);
+            item.video.addEventListener("ended", onEnded);
+            item.video.addEventListener("error", onError);
+            item.panel?.classList.add("is-playing");
+            updateStatus(item, "Rolling out...");
+            const playPromise = item.video.play();
+            if (playPromise?.catch) {
+              playPromise.catch(() => {
+                finish("Ready", false);
+              });
+            }
+          });
+
+          const endedPromises = items.map(playAndWait);
+
+          Promise.all(endedPromises).then(() => {
+            if (activeCycleId !== cycleId) return;
+            nextCycleTimer = window.setTimeout(runCycle, cyclePauseMs);
+          });
+        });
+      };
+
+      waitForMetadata.then(runCycle);
+    }
+
+    initOpenLoopRollout();
+  </script>
 </body>
 </html>
