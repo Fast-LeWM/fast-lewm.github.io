@@ -175,6 +175,17 @@
     .hero-rollout .section-title {
       margin-bottom: 18px;
     }
+    .rollout-task + .rollout-task {
+      margin-top: 26px;
+    }
+    .rollout-task-title {
+      width: min(100%, 1040px);
+      margin: 0 auto 10px;
+      color: #1f2937;
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
     .open-loop-rollout-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -359,48 +370,100 @@
 
         <section id="open-loop-rollout" class="hero-rollout">
           <h2 class="section-title">Open-Loop Rollout Visualization</h2>
-          <div class="open-loop-rollout-grid">
-            <div class="rollout-panel">
-              <h3 class="rollout-title">start</h3>
-              <div class="rollout-media">
-                <img src="static/images/tworoom_start.png" alt="Two-Room open-loop rollout start frame">
+          <div class="rollout-task">
+            <h3 class="rollout-task-title">Two-Room</h3>
+            <div class="open-loop-rollout-grid">
+              <div class="rollout-panel">
+                <h3 class="rollout-title">start</h3>
+                <div class="rollout-media">
+                  <img src="static/images/tworoom_start.png" alt="Two-Room open-loop rollout start frame">
+                </div>
+              </div>
+
+              <div class="rollout-panel">
+                <h3 class="rollout-title">goal</h3>
+                <div class="rollout-media">
+                  <img src="static/images/tworoom_goal.png" alt="Two-Room open-loop rollout goal frame">
+                </div>
+              </div>
+
+              <div class="rollout-panel" style="--rollout-duration: 4s;">
+                <h3 class="rollout-title">LeWM</h3>
+                <div class="rollout-media">
+                  <video class="open-loop-video" data-rollout-video data-rollout-rate="1" muted playsinline preload="auto">
+                    <source src="static/videos/baseline_pred_decode_tr.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="rollout-status" aria-live="polite">
+                  <span class="rollout-state" data-rollout-state>Ready</span>
+                </div>
+                <div class="rollout-progress" aria-hidden="true">
+                  <div class="rollout-progress-fill"></div>
+                </div>
+              </div>
+
+              <div class="rollout-panel" style="--rollout-duration: 0.5s;">
+                <h3 class="rollout-title">Fast-LeWM</h3>
+                <div class="rollout-media">
+                  <video class="open-loop-video" data-rollout-video data-rollout-rate="8" muted playsinline preload="auto">
+                    <source src="static/videos/ours_pred_decode_tr.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="rollout-status" aria-live="polite">
+                  <span class="rollout-state" data-rollout-state>Ready</span>
+                </div>
+                <div class="rollout-progress" aria-hidden="true">
+                  <div class="rollout-progress-fill"></div>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div class="rollout-panel">
-              <h3 class="rollout-title">goal</h3>
-              <div class="rollout-media">
-                <img src="static/images/tworoom_goal.png" alt="Two-Room open-loop rollout goal frame">
+          <div class="rollout-task">
+            <h3 class="rollout-task-title">Reacher</h3>
+            <div class="open-loop-rollout-grid">
+              <div class="rollout-panel">
+                <h3 class="rollout-title">start</h3>
+                <div class="rollout-media">
+                  <img src="static/images/reacher_start.png" alt="Reacher open-loop rollout start frame">
+                </div>
               </div>
-            </div>
 
-            <div class="rollout-panel" style="--rollout-duration: 4s;">
-              <h3 class="rollout-title">LeWM</h3>
-              <div class="rollout-media">
-                <video class="open-loop-video" data-rollout-video data-rollout-rate="1" muted playsinline preload="auto">
-                  <source src="static/videos/baseline_pred_decode.mp4" type="video/mp4">
-                </video>
+              <div class="rollout-panel">
+                <h3 class="rollout-title">goal</h3>
+                <div class="rollout-media">
+                  <img src="static/images/reacher_goal.png" alt="Reacher open-loop rollout goal frame">
+                </div>
               </div>
-              <div class="rollout-status" aria-live="polite">
-                <span class="rollout-state" data-rollout-state>Ready</span>
-              </div>
-              <div class="rollout-progress" aria-hidden="true">
-                <div class="rollout-progress-fill"></div>
-              </div>
-            </div>
 
-            <div class="rollout-panel" style="--rollout-duration: 0.5s;">
-              <h3 class="rollout-title">Fast-LeWM</h3>
-              <div class="rollout-media">
-                <video class="open-loop-video" data-rollout-video data-rollout-rate="8" muted playsinline preload="auto">
-                  <source src="static/videos/ours_pred_decode.mp4" type="video/mp4">
-                </video>
+              <div class="rollout-panel" style="--rollout-duration: 4s;">
+                <h3 class="rollout-title">LeWM</h3>
+                <div class="rollout-media">
+                  <video class="open-loop-video" data-rollout-video data-rollout-rate="1" muted playsinline preload="auto">
+                    <source src="static/videos/baseline_pred_decode_reacher.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="rollout-status" aria-live="polite">
+                  <span class="rollout-state" data-rollout-state>Ready</span>
+                </div>
+                <div class="rollout-progress" aria-hidden="true">
+                  <div class="rollout-progress-fill"></div>
+                </div>
               </div>
-              <div class="rollout-status" aria-live="polite">
-                <span class="rollout-state" data-rollout-state>Ready</span>
-              </div>
-              <div class="rollout-progress" aria-hidden="true">
-                <div class="rollout-progress-fill"></div>
+
+              <div class="rollout-panel" style="--rollout-duration: 0.5s;">
+                <h3 class="rollout-title">Fast-LeWM</h3>
+                <div class="rollout-media">
+                  <video class="open-loop-video" data-rollout-video data-rollout-rate="8" muted playsinline preload="auto">
+                    <source src="static/videos/ours_pred_decode_reacher.mp4" type="video/mp4">
+                  </video>
+                </div>
+                <div class="rollout-status" aria-live="polite">
+                  <span class="rollout-state" data-rollout-state>Ready</span>
+                </div>
+                <div class="rollout-progress" aria-hidden="true">
+                  <div class="rollout-progress-fill"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -446,10 +509,16 @@
     gap: var(--compare-grid-gap);
   }
 
-  .method-card:nth-child(1) { grid-column: 1; grid-row: 1; }
-  .method-card:nth-child(2) { grid-column: 2; grid-row: 1; }
-  .method-card:nth-child(3) { grid-column: 1; grid-row: 2; }
-  .method-card:nth-child(4) { grid-column: 2; grid-row: 2; }
+  .planning-task-title {
+    grid-column: 1 / -1;
+    width: min(100%, 1040px);
+    margin: 0 auto -6px;
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 850;
+    line-height: 1.2;
+    text-align: left;
+  }
 
   .method-card {
     background: var(--compare-card-bg);
@@ -802,17 +871,14 @@
     .method-compare {
       --compare-columns: 1;
     }
-
-    .method-card:nth-child(n) {
-      grid-column: auto;
-      grid-row: auto;
-    }
   }
 </style>
 
 <div class="method-compare" data-method-compare>
   <h2 class="section-title planning-demo-title">Planning</h2>
   <div class="method-compare-grid">
+
+    <h3 class="planning-task-title">Cube</h3>
 
     <!-- Group 1, LeWM: compact planning-progress bar with five sequential predictors. -->
     <div class="method-card LeWM">
@@ -1012,6 +1078,8 @@
 
       <div class="viz-label" data-label="oursVizLabel"></div>
     </div>
+
+    <h3 class="planning-task-title">PushT</h3>
 
     <!-- Group 2 placeholder pair: duplicate this pair's labels later if each video needs custom copy. -->
     <div class="method-card LeWM">
