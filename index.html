@@ -365,7 +365,8 @@
         </p>
         <p class="affiliation">Xi'an Jiaotong University &nbsp;|&nbsp; <sup>&dagger;</sup>Corresponding author</p>
         <div class="buttons">
-          <a class="button primary" href="https://arxiv.org/abs/2606.26217" target="_blank">Paper PDF</a>
+          <a class="button primary" href="static/pdfs/fast_leworldmodel.pdf" target="_blank" rel="noopener noreferrer">Paper PDF</a>
+          <a class="button" href="https://arxiv.org/abs/2606.26217v2" target="_blank" rel="noopener noreferrer">arXiv</a>
           <a class="button" href="https://github.com/Yuntian-Gao/Fast-LeWorldModel" target="_blank">Code</a>
         </div>
 
@@ -1643,13 +1644,11 @@
       <div class="container">
         <h2 class="section-title">Abstract</h2>
         <p class="section-lead">
-          Joint-Embedding Predictive Architectures (JEPAs), including LeWorldModel, are promising reconstruction-free visual world models. However, LeWM evaluates candidate action sequences through repeated one-step latent transitions, which makes planning slow and allows latent prediction errors to accumulate over long horizons.
+          Joint-Embedding Predictive Architectures (JEPAs), including LeWorldModel (LeWM), are promising reconstruction-free visual world models. However, LeWM evaluates candidate action sequences through repeated one-step latent transitions, which makes planning slow and allows latent prediction errors to accumulate over long horizons.
         </p>
         <div class="card">
           <p>
-            <strong>Fast-LeWM</strong> replaces repeated local rollout with action-prefix prediction. Given the current latent and a candidate action sequence, Fast-LeWM encodes prefixes of that sequence and predicts the future latents reached after executing those prefixes in parallel. By making action prefixes the basic prediction unit, the model directly learns action effects accumulated over multiple horizons instead of only fitting adjacent one-step transitions. During planning, the terminal prefix token can be used to evaluate the corresponding future latent without explicitly rolling through every intermediate imagined state. Across multiple tasks, Fast-LeWM improves average success over LeWM while substantially
-reducing planning time, achieving lower open-loop latent loss whose growth becomes significantly
-slower as the rollout horizon increases.
+            <strong>Fast-LeWM</strong> replaces repeated local rollout with action-prefix prediction. Given the current latent and a candidate action sequence, it encodes prefixes of that sequence and predicts the future latents reached after executing those prefixes in parallel. Joint multi-horizon training teaches the model how states evolve under different action prefixes. During planning, each future latent can be evaluated directly from its prefix without rolling through intermediate imagined states. Across four tasks, Fast-LeWM improves average planning success from 85.8% to 90.5% while reducing CEM solve time from 33.7s to 16.1s. It also lowers open-loop latent prediction loss and slows its growth over longer horizons.
           </p>
         </div>
       </div>
@@ -1659,12 +1658,12 @@ slower as the rollout horizon increases.
       <div class="container">
         <h2 class="section-title">Method: action-prefix prediction</h2>
         <p class="section-lead">
-          Using prefixes of the candidate action sequence as multi-horizon queries, Fast-LeWM predict all future latents in parallel from the observed anchor latent.
+          Using prefixes of the candidate action sequence as multi-horizon queries, Fast-LeWM predicts future latents in parallel from the observed anchor latent.
         </p>
         <div class="grid">
           <figure class="card wide-figure">
             <img src="static/images/figure2_pipeline.png" alt="Fast-LeWM training pipeline with visual encoder, causal action-prefix encoder, and parallel latent predictor">
-            <figcaption>Training pipeline. The state token from the current latent conditions a causal action-prefix encoder; each prefix token supervises one future latent horizon.</figcaption>
+            <figcaption>Training pipeline. A state token and causally masked action tokens produce prefix tokens; the parallel predictor learns every future latent horizon through dense supervision.</figcaption>
           </figure>
 
         </div>
@@ -1679,17 +1678,21 @@ slower as the rollout horizon increases.
         </p>
         <div class="grid">
           <div class="card span-4">
-            <p class="metric">3.9x</p>
-            <p class="metric-label">lower dynamics-module time 31.4s to 8.0s.</p>
+            <p class="metric">4.8x</p>
+            <p class="metric-label">faster dynamics evaluation: 19.7s to 4.1s.</p>
           </div>
           <div class="card span-4">
-            <p class="metric">48.0%</p>
-            <p class="metric-label">lower full CEM solve time: 54.4s to 28.3s.</p>
+            <p class="metric">52.2%</p>
+            <p class="metric-label">lower full CEM solve time: 33.7s to 16.1s.</p>
           </div>
           <div class="card span-4">
             <p class="metric">90.5%</p>
             <p class="metric-label">average success rate, improved from LeWM's 85.8%.</p>
           </div>
+          <figure class="card wide-figure">
+            <img src="static/images/figure1_efficiency.png" alt="Dynamics evaluation time falls from 19.7 to 4.1 seconds; full CEM planning is faster with higher success across four tasks">
+            <figcaption>Planning efficiency and success. Parallel prefix prediction reduces dynamics evaluation and full CEM solve time while improving average success across the four tasks.</figcaption>
+          </figure>
           <div class="card center-table-card">
             <h3>Planning success (%)</h3>
             <table>
@@ -1699,13 +1702,13 @@ slower as the rollout horizon increases.
                 <tr><td>DINO-WM</td><td>100</td><td>79</td><td>74</td><td>86</td><td>84.8</td></tr>
                 <tr><td>LeWM</td><td>87</td><td>86</td><td>96</td><td>74</td><td>85.8</td></tr>
                 <tr class="highlight-row"><td>Fast-LeWM</td><td>98</td><td>88</td><td>96</td><td>80</td><td>90.5</td></tr>
-                <tr><td>Fast-LeWM+ self-consistency</td><td>98</td><td>90</td><td>98</td><td>82</td><td>92.0</td></tr>
+                <tr><td>Fast-LeWM + Self-Consistency</td><td>98</td><td>90</td><td>98</td><td>82</td><td>92.0</td></tr>
               </tbody>
             </table>
           </div>
           <figure class="card wide-figure open-loop-figure">
-            <img src="static/images/figure3_open_loop.png" alt="Open-loop latent prediction loss across tasks">
-            <figcaption>Open-loop latent prediction. Fast-LeWM reduces both initial latent error and the growth rate of error over longer horizons.</figcaption>
+            <img src="static/images/figure3_open_loop.png" alt="Open-loop latent prediction loss over 50 environment steps across Two-Room, Reacher, PushT, and Cube">
+            <figcaption>Open-loop latent prediction over 50 environment steps. Fast-LeWM has lower loss at every evaluated step and a smaller fitted error-growth slope on all four tasks.</figcaption>
           </figure>
         </div>
       </div>
@@ -1721,7 +1724,7 @@ slower as the rollout horizon increases.
       eprint={2606.26217},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2606.26217}, 
+      url={https://arxiv.org/abs/2606.26217v2},
 }</code></pre>
       </div>
     </section>
